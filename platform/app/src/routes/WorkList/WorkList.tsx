@@ -26,6 +26,7 @@ import {
   AboutModal,
   UserPreferences,
   LoadingIndicatorProgress,
+  Modal,
 } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
@@ -64,6 +65,26 @@ function WorkList({
     ...defaultFilterValues,
     ...queryFilterValues,
   });
+
+  // ~ Voice Command Dialog State
+  const [isVoiceDialogOpen, setIsVoiceDialogOpen] = useState(false);
+  const [voiceInput, setVoiceInput] = useState('');
+
+  // Voice command handlers
+  const handleVoiceCommandClick = () => {
+    setIsVoiceDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsVoiceDialogOpen(false);
+    setVoiceInput('');
+  };
+
+  const handleSubmitVoiceInput = () => {
+    console.log('Voice input submitted:', voiceInput);
+    handleCloseDialog();
+    // Add logic here to process the voice input if needed
+  };
 
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
@@ -469,50 +490,84 @@ function WorkList({
       : undefined;
 
   return (
-    <div className="bg-black h-screen flex flex-col ">
-      <Header
-        isSticky
-        menuOptions={menuOptions}
-        isReturnEnabled={false}
-        WhiteLabeling={appConfig.whiteLabeling}
-      />
-      <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
-        <StudyListFilter
-          numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
-          filtersMeta={filtersMeta}
-          filterValues={{ ...filterValues, ...defaultSortValues }}
-          onChange={setFilterValues}
-          clearFilters={() => setFilterValues(defaultFilterValues)}
-          isFiltering={isFiltering(filterValues, defaultFilterValues)}
-          onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
+      <div className="bg-black h-screen flex flex-col ">
+        <Header
+            isSticky
+            menuOptions={menuOptions}
+            isReturnEnabled={false}
+            WhiteLabeling={appConfig.whiteLabeling}
+            onVoiceCommandClick={handleVoiceCommandClick} // Pass the handler
         />
-        {hasStudies ? (
-          <div className="grow flex flex-col">
-            <StudyListTable
-              tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
-              numOfStudies={numOfStudies}
+        <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
+          <StudyListFilter
+              numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
               filtersMeta={filtersMeta}
-            />
-            <div className="grow">
-              <StudyListPagination
-                onChangePage={onPageNumberChange}
-                onChangePerPage={onResultsPerPageChange}
-                currentPage={pageNumber}
-                perPage={resultsPerPage}
+              filterValues={{ ...filterValues, ...defaultSortValues }}
+              onChange={setFilterValues}
+              clearFilters={() => setFilterValues(defaultFilterValues)}
+              isFiltering={isFiltering(filterValues, defaultFilterValues)}
+              onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
+          />
+          {hasStudies ? (
+              <div className="grow flex flex-col">
+                <StudyListTable
+                    tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
+                    numOfStudies={numOfStudies}
+                    filtersMeta={filtersMeta}
+                />
+                <div className="grow">
+                  <StudyListPagination
+                      onChangePage={onPageNumberChange}
+                      onChangePerPage={onResultsPerPageChange}
+                      currentPage={pageNumber}
+                      perPage={resultsPerPage}
+                  />
+                </div>
+              </div>
+          ) : (
+              <div className="flex flex-col items-center justify-center pt-48">
+                {appConfig.showLoadingIndicator && isLoadingData ? (
+                    <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
+                ) : (
+                    <EmptyStudies />
+                )}
+              </div>
+          )}
+          {/* Voice Command Dialog */}
+          {isVoiceDialogOpen && (
+              <Modal
+                  isOpen={isVoiceDialogOpen}
+                  onClose={handleCloseDialog}
+                  title={t('VoiceCommand:title', 'Voice Command')} // Optional: add to i18n
+                  closeButton
+              >
+                <div className="p-4">
+              <textarea
+                  className="w-full p-2 border rounded text-black" // <-- add this class
+                  rows={4}
+                  placeholder={t('VoiceCommand:placeholder', 'Type your voice command here...')}
+                  value={voiceInput}
+                  onChange={(e) => setVoiceInput(e.target.value)}
               />
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center pt-48">
-            {appConfig.showLoadingIndicator && isLoadingData ? (
-              <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
-            ) : (
-              <EmptyStudies />
-            )}
-          </div>
-        )}
+                  <div className="mt-4 flex justify-end">
+                    <button
+                        className="px-4 py-2 bg-primary-main text-white rounded"
+                        onClick={handleSubmitVoiceInput}
+                    >
+                      {t('VoiceCommand:submit', 'Submit')}
+                    </button>
+                    <button
+                        className="ml-2 px-4 py-2 bg-gray-300 rounded"
+                        onClick={handleCloseDialog}
+                    >
+                      {t('VoiceCommand:cancel', 'Cancel')}
+                    </button>
+                  </div>
+                </div>
+              </Modal>
+          )}
+        </div>
       </div>
-    </div>
   );
 }
 
