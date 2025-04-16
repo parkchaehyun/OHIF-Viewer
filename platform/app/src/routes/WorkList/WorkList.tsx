@@ -31,6 +31,8 @@ import {
 
 import i18n from '@ohif/i18n';
 
+import { sendPromptToLLM } from './llmService'; //llm연결
+
 const { sortBySeriesDate } = utils;
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
@@ -51,6 +53,8 @@ function WorkList({
   onRefresh,
   servicesManager,
 }) {
+  // WorkList.tsx 상단(함수 컴포넌트 내부)에 useState를 import한 상태에서:
+  const [llmResult, setLlmResult] = useState<string | null>(null);
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
@@ -77,13 +81,20 @@ function WorkList({
 
   const handleCloseDialog = () => {
     setIsVoiceDialogOpen(false);
-    setVoiceInput('');
   };
 
-  const handleSubmitVoiceInput = () => {
+  const handleSubmitVoiceInput = async () => {
     console.log('Voice input submitted:', voiceInput);
+    // LLM API 호출하여 응답받기 (await 사용)
+    const result = await sendPromptToLLM(voiceInput);
+    if (result) {
+      setLlmResult(result);
+    } else {
+      setLlmResult("응답을 받아오지 못했습니다.");
+    }
+    setVoiceInput('');
+    // 다이얼로그 닫기
     handleCloseDialog();
-    // Add logic here to process the voice input if needed
   };
 
   const debouncedFilterValues = useDebounce(filterValues, 200);
@@ -347,13 +358,13 @@ function WorkList({
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                  return {
-                    description: s.description || '(empty)',
-                    seriesNumber: s.seriesNumber ?? '',
-                    modality: s.modality || '',
-                    instances: s.numSeriesInstances || '',
-                  };
-                })
+                return {
+                  description: s.description || '(empty)',
+                  seriesNumber: s.seriesNumber ?? '',
+                  modality: s.modality || '',
+                  instances: s.numSeriesInstances || '',
+                };
+              })
               : []
           }
         >
@@ -382,15 +393,15 @@ function WorkList({
                 key={i}
                 to={`${dataPath ? '../../' : ''}${mode.routeName}${dataPath ||
                   ''}?${query.toString()}`}
-                // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+              // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
                   variant={isValidMode ? 'contained' : 'disabled'}
                   disabled={!isValidMode}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
-                  className={classnames('font-medium	', { 'ml-2': !isFirst })}
-                  onClick={() => {}}
+                  className={classnames('font-medium   ', { 'ml-2': !isFirst })}
+                  onClick={() => { }}
                 >
                   {t(`Modes:${mode.displayName}`)}
                 </Button>
@@ -468,106 +479,113 @@ function WorkList({
   const uploadProps =
     dicomUploadComponent && dataSource.getConfig().dicomUploadEnabled
       ? {
-          title: 'Upload files',
-          closeButton: true,
-          shouldCloseOnEsc: false,
-          shouldCloseOnOverlayClick: false,
-          content: dicomUploadComponent.bind(null, {
-            dataSource,
-            onComplete: () => {
-              hide();
-              onRefresh();
-            },
-            onStarted: () => {
-              show({
-                ...uploadProps,
-                // when upload starts, hide the default close button as closing the dialogue must be handled by the upload dialogue itself
-                closeButton: false,
-              });
-            },
-          }),
-        }
+        title: 'Upload files',
+        closeButton: true,
+        shouldCloseOnEsc: false,
+        shouldCloseOnOverlayClick: false,
+        content: dicomUploadComponent.bind(null, {
+          dataSource,
+          onComplete: () => {
+            hide();
+            onRefresh();
+          },
+          onStarted: () => {
+            show({
+              ...uploadProps,
+              // when upload starts, hide the default close button as closing the dialogue must be handled by the upload dialogue itself
+              closeButton: false,
+            });
+          },
+        }),
+      }
       : undefined;
 
   return (
-      <div className="bg-black h-screen flex flex-col ">
-        <Header
-            isSticky
-            menuOptions={menuOptions}
-            isReturnEnabled={false}
-            WhiteLabeling={appConfig.whiteLabeling}
-            onVoiceCommandClick={handleVoiceCommandClick} // Pass the handler
-        />
-        <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
-          <StudyListFilter
-              numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
-              filtersMeta={filtersMeta}
-              filterValues={{ ...filterValues, ...defaultSortValues }}
-              onChange={setFilterValues}
-              clearFilters={() => setFilterValues(defaultFilterValues)}
-              isFiltering={isFiltering(filterValues, defaultFilterValues)}
-              onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
-          />
-          {hasStudies ? (
-              <div className="grow flex flex-col">
-                <StudyListTable
-                    tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
-                    numOfStudies={numOfStudies}
-                    filtersMeta={filtersMeta}
-                />
-                <div className="grow">
-                  <StudyListPagination
-                      onChangePage={onPageNumberChange}
-                      onChangePerPage={onResultsPerPageChange}
-                      currentPage={pageNumber}
-                      perPage={resultsPerPage}
-                  />
-                </div>
-              </div>
-          ) : (
-              <div className="flex flex-col items-center justify-center pt-48">
-                {appConfig.showLoadingIndicator && isLoadingData ? (
-                    <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
-                ) : (
-                    <EmptyStudies />
-                )}
-              </div>
-          )}
-          {/* Voice Command Dialog */}
-          {isVoiceDialogOpen && (
-              <Modal
-                  isOpen={isVoiceDialogOpen}
-                  onClose={handleCloseDialog}
-                  title={t('VoiceCommand:title', 'Voice Command')} // Optional: add to i18n
-                  closeButton
-              >
-                <div className="p-4">
-              <textarea
-                  className="w-full p-2 border rounded text-black" // <-- add this class
-                  rows={4}
-                  placeholder={t('VoiceCommand:placeholder', 'Type your voice command here...')}
-                  value={voiceInput}
-                  onChange={(e) => setVoiceInput(e.target.value)}
-              />
-                  <div className="mt-4 flex justify-end">
-                    <button
-                        className="px-4 py-2 bg-primary-main text-white rounded"
-                        onClick={handleSubmitVoiceInput}
-                    >
-                      {t('VoiceCommand:submit', 'Submit')}
-                    </button>
-                    <button
-                        className="ml-2 px-4 py-2 bg-gray-300 rounded"
-                        onClick={handleCloseDialog}
-                    >
-                      {t('VoiceCommand:cancel', 'Cancel')}
-                    </button>
-                  </div>
-                </div>
-              </Modal>
-          )}
+    <div className="bg-black h-screen flex flex-col ">
+      <Header
+        isSticky
+        menuOptions={menuOptions}
+        isReturnEnabled={false}
+        WhiteLabeling={appConfig.whiteLabeling}
+        onVoiceCommandClick={handleVoiceCommandClick} // Pass the handler
+      />
+      {/* 여기에 LLM 결과를 표시하는 새로운 영역을 추가 */}
+      {llmResult && (
+        <div className="p-4 bg-gray-800 text-white">
+          <strong>LLM 결과:</strong> {llmResult}
         </div>
+      )}
+
+      <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
+        <StudyListFilter
+          numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
+          filtersMeta={filtersMeta}
+          filterValues={{ ...filterValues, ...defaultSortValues }}
+          onChange={setFilterValues}
+          clearFilters={() => setFilterValues(defaultFilterValues)}
+          isFiltering={isFiltering(filterValues, defaultFilterValues)}
+          onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
+        />
+        {hasStudies ? (
+          <div className="grow flex flex-col">
+            <StudyListTable
+              tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
+              numOfStudies={numOfStudies}
+              filtersMeta={filtersMeta}
+            />
+            <div className="grow">
+              <StudyListPagination
+                onChangePage={onPageNumberChange}
+                onChangePerPage={onResultsPerPageChange}
+                currentPage={pageNumber}
+                perPage={resultsPerPage}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center pt-48">
+            {appConfig.showLoadingIndicator && isLoadingData ? (
+              <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
+            ) : (
+              <EmptyStudies />
+            )}
+          </div>
+        )}
+        {/* Voice Command Dialog */}
+        {isVoiceDialogOpen && (
+          <Modal
+            isOpen={isVoiceDialogOpen}
+            onClose={handleCloseDialog}
+            title={t('VoiceCommand:title', 'Voice Command')} // Optional: add to i18n
+            closeButton
+          >
+            <div className="p-4">
+              <textarea
+                className="w-full p-2 border rounded text-black" // <-- add this class
+                rows={4}
+                placeholder={t('VoiceCommand:placeholder', 'Type your voice command here...')}
+                value={voiceInput}
+                onChange={(e) => setVoiceInput(e.target.value)}
+              />
+              <div className="mt-4 flex justify-end">
+                <button
+                  className="px-4 py-2 bg-primary-main text-white rounded"
+                  onClick={handleSubmitVoiceInput}
+                >
+                  {t('VoiceCommand:submit', 'Submit')}
+                </button>
+                <button
+                  className="ml-2 px-4 py-2 bg-gray-300 rounded"
+                  onClick={handleCloseDialog}
+                >
+                  {t('VoiceCommand:cancel', 'Cancel')}
+                </button>
+              </div>
+            </div>
+          </Modal>
+        )}
       </div>
+    </div>
   );
 }
 
