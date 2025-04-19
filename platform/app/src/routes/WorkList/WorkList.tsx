@@ -69,6 +69,86 @@ function WorkList({
     ...defaultFilterValues,
     ...queryFilterValues,
   });
+  function applyLLMFilters(parsedResult) {
+    const newFilters = { ...filterValues };
+
+    if (parsedResult.patientName) {
+      newFilters.patientName = parsedResult.patientName;
+    }
+    if (parsedResult.description) {
+      newFilters.description = parsedResult.description;
+    }
+    if (parsedResult.modalities) {
+      newFilters.modalities = parsedResult.modalities;
+    }
+    if (parsedResult.studyDateRange) {
+      newFilters.studyDate = {
+        startDate: parsedResult.studyDateRange[0],
+        endDate: parsedResult.studyDateRange[1],
+      };
+    }
+
+    setFilterValues(newFilters);
+    onRefresh();
+  }
+  function handleLLMCommand(command: any) {
+    if (!command || typeof command !== 'object') return;
+
+    switch (command.command) {
+      case 'filter':
+        applyLLMFilters(command);
+        break;
+
+      case 'go_to_page':
+        if (typeof command.pageNumber === 'number') {
+          setFilterValues(prev => ({ ...prev, pageNumber: command.pageNumber }));
+        }
+        break;
+
+      case 'sort':
+        if (command.sortBy && command.sortDirection) {
+          setFilterValues(prev => ({
+            ...prev,
+            sortBy: command.sortBy,
+            sortDirection: command.sortDirection,
+          }));
+        }
+        break;
+
+      case 'clear_filters':
+        setFilterValues(defaultFilterValues);
+        break;
+
+      case 'open_study':
+        if (command.studyInstanceUid) {
+          const query = new URLSearchParams({ StudyInstanceUIDs: command.studyInstanceUid });
+          navigate(`/viewer/dicomweb?${query.toString()}`);
+        }
+        break;
+
+      case 'show_version':
+        alert(`버전 정보: ${process.env.VERSION_NUMBER} / ${process.env.COMMIT_HASH}`);
+        break;
+
+      case 'open_upload':
+        if (uploadProps) {
+          show(uploadProps);
+        }
+        break;
+
+      case 'delete_exam':
+        alert(`삭제 요청됨: ${command.studyInstanceUid}`);
+        break;
+
+      case 'set_layout':
+        alert(`레이아웃 요청: ${command.layout}`);
+        break;
+
+      default:
+        console.warn('알 수 없는 명령:', command);
+    }
+  }
+
 
   // ~ Voice Command Dialog State
   const [isVoiceDialogOpen, setIsVoiceDialogOpen] = useState(false);
@@ -84,18 +164,20 @@ function WorkList({
   };
 
   const handleSubmitVoiceInput = async () => {
-    console.log('Voice input submitted:', voiceInput);
-    // LLM API 호출하여 응답받기 (await 사용)
-    const result = await sendPromptToLLM(voiceInput);
+    const result = await sendPromptToLLM(voiceInput, "worklist");
+
     if (result) {
-      setLlmResult(result);
+      setLlmResult(JSON.stringify(result));
+      handleLLMCommand(result);
     } else {
-      setLlmResult("응답을 받아오지 못했습니다.");
+      setLlmResult("응답 실패");
     }
+
     setVoiceInput('');
-    // 다이얼로그 닫기
     handleCloseDialog();
   };
+
+
 
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
@@ -145,13 +227,17 @@ function WorkList({
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
   const numOfStudies = studiesTotal;
 
-  const setFilterValues = val => {
-    if (filterValues.pageNumber === val.pageNumber) {
-      val.pageNumber = 1;
+  const setFilterValues = updater => {
+    const newVal = typeof updater === 'function' ? updater(filterValues) : updater;
+
+    if (filterValues.pageNumber === newVal.pageNumber) {
+      newVal.pageNumber = 1;
     }
-    _setFilterValues(val);
+
+    _setFilterValues(newVal);
     setExpandedRows([]);
   };
+
 
   const onPageNumberChange = newPageNumber => {
     const oldPageNumber = filterValues.pageNumber;
