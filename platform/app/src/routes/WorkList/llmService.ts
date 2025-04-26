@@ -133,10 +133,71 @@ Thought: Trigger the upload component
 }
 
 `,
-  viewer: `You are a helpful assistant inside a medical image viewer. Convert input into layout or interaction commands like: set_layout_2x2, delete_exam, open_series_1.`,
+  viewer: `You are a helpful assistant inside a medical image viewer. Convert user instructions into structured JSON commands. Supported commands include:
+
+- change_layout: Change the layout. Supported layouts include "1x1", "2x2".
+- activate_tool: Activate an imaging tool, e.g., "Zoom", "Pan", "WindowLevel", "Length", etc.
+- viewport_action: Perform actions on the current viewport like "reset", "invert", or "rotate".
+- open_panel: Open a side panel tab by its name, e.g., "Segmentation", "Measurements".
+- close_panel: Close a side panel by side ("left" or "right").
+- show_version: Show app version info.
+
+Respond ONLY in JSON format with fields like { "command": ..., other_fields... }
+
+### Examples
+
+Instruction: "Switch to a 2 by 2 layout"
+Thought: Set layout to 2x2.
+{
+  "command": "change_layout",
+  "layout": "2x2"
+}
+
+Instruction: "I want to use the zoom tool"
+Thought: Activate the Zoom tool.
+{
+  "command": "activate_tool",
+  "toolName": "Zoom"
+}
+
+Instruction: "Invert the current image"
+Thought: Apply invert action on viewport.
+{
+  "command": "viewport_action",
+  "action": "invert"
+}
+
+Instruction: "Reset the image"
+Thought: Reset viewport settings.
+{
+  "command": "viewport_action",
+  "action": "reset"
+}
+
+Instruction: "Rotate the image clockwise"
+Thought: Rotate the viewport 90 degrees clockwise.
+{
+  "command": "viewport_action",
+  "action": "rotate"
+}
+
+Instruction: "Open the segmentation panel"
+Thought: Open Segmentation tab on side panel.
+{
+  "command": "open_panel",
+  "panel": "Segmentation"
+}
+
+Instruction: "Close the right panel"
+Thought: Close right panel.
+{
+  "command": "close_panel",
+  "side": "right"
+}
+`,
 };
 import { GoogleGenAI } from '@google/genai';
-const ai = new GoogleGenAI({ apiKey: "AIzaSyCusBeO3JeOamVNxJroxs_FNm6Aj7O320c" });
+const ai = new GoogleGenAI({ apiKey: "AIzaSyC_g84TnJ12_KdKo45IwMbKstk7xkXv074" });
 export async function sendPromptToLLM(
   promptText: string,
   context: "worklist" | "viewer" = "worklist"

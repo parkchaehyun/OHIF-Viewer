@@ -49,6 +49,8 @@ function ViewerLayout({
   const [appConfig] = useAppConfig();
   const navigate = useNavigate();
   const location = useLocation();
+  const [llmResult, setLlmResult] = useState<string | null>(null);
+
 
 
   const handleVoiceCommandClick = () => {
@@ -59,13 +61,71 @@ function ViewerLayout({
     setIsVoiceDialogOpen(false);
   };
 
+  const handleLLMCommandForViewer = (command: any) => {
+    if (!command || typeof command !== 'object') return;
+
+    switch (command.command) {
+      case 'change_layout':
+        const stageMap = {
+          '1x1': '1x1',
+          '2x1': '2x1',
+          '2x2': '2x2',
+          '3x1': '3x1',
+        };
+        const stageId = stageMap[command.layout];
+        if (stageId) {
+          commandsManager.runCommand('setHangingProtocol', {
+            protocolId: '@ohif/mnGrid',
+            stageId: stageId,
+          });
+        } else {
+          console.warn('Unsupported layout:', command.layout);
+        }
+        break;
+
+      case 'activate_tool':
+        if (command.toolName) {
+          commandsManager.runCommand('setToolActive', { toolName: command.toolName });
+        }
+        break;
+
+      case 'viewport_action':
+        if (command.action === 'reset') {
+          commandsManager.runCommand('resetViewport');
+        } else if (command.action === 'invert') {
+          commandsManager.runCommand('invertViewport');
+        } else if (command.action === 'rotate') {
+          commandsManager.runCommand('rotateViewportCW');
+        }
+        break;
+
+      case 'open_panel':
+        commandsManager.runCommand('openPanel', { side: 'right', tabName: command.panel });
+        break;
+
+      case 'close_panel':
+        if (command.side === 'right') {
+          commandsManager.runCommand('closeRightPanel');
+        } else if (command.side === 'left') {
+          commandsManager.runCommand('closeLeftPanel');
+        }
+        break;
+
+      case 'show_version':
+        alert(`Viewer Version: ${process.env.VERSION_NUMBER} / ${process.env.COMMIT_HASH}`);
+        break;
+
+      default:
+        console.warn('Unknown LLM command:', command);
+    }
+  };
+
   const handleSubmitVoiceInput = async () => {
-    const result = await sendPromptToLLM(voiceInput, "viewer"); // Notice: viewer context!
+    const result = await sendPromptToLLM(voiceInput, "viewer");
 
     if (result) {
-      console.log('LLM result:', result);
-      JSON.stringify(result)
-      // TODO: Implement viewer-specific command handling
+      setLlmResult(JSON.stringify(result));
+      handleLLMCommandForViewer(result); // <-- call viewer handler
     } else {
       alert('LLM 응답 실패');
     }
@@ -73,6 +133,7 @@ function ViewerLayout({
     setVoiceInput('');
     handleCloseDialog();
   };
+
 
   const onClickReturnButton = () => {
     const { pathname } = location;
@@ -262,6 +323,11 @@ function ViewerLayout({
           </div>
         </ErrorBoundary>
       </Header>
+      {llmResult && (
+          <div className="p-4 bg-gray-800 text-white">
+            <strong>LLM 결과:</strong> {llmResult}
+          </div>
+      )}
       {isVoiceDialogOpen && (
           <Modal
               isOpen={isVoiceDialogOpen}
