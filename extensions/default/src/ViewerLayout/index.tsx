@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
+import { sendPromptToLLM } from '../../../../platform/app/src/routes/WorkList/llmService';
 
 import {
   SidePanel,
   ErrorBoundary,
   UserPreferences,
   AboutModal,
+  Modal,
   Header,
   useModal,
   LoadingIndicatorProgress,
@@ -25,6 +27,8 @@ import Toolbar from '../Toolbar/Toolbar';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
+
+
 function ViewerLayout({
   // From Extension Module Params
   extensionManager,
@@ -39,9 +43,97 @@ function ViewerLayout({
   leftPanelDefaultClosed = false,
   rightPanelDefaultClosed = false,
 }): React.FunctionComponent {
+  const [isVoiceDialogOpen, setIsVoiceDialogOpen] = useState(false);
+  const [voiceInput, setVoiceInput] = useState('');
+
   const [appConfig] = useAppConfig();
   const navigate = useNavigate();
   const location = useLocation();
+  const [llmResult, setLlmResult] = useState<string | null>(null);
+
+
+
+  const handleVoiceCommandClick = () => {
+    setIsVoiceDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsVoiceDialogOpen(false);
+  };
+
+  const handleLLMCommandForViewer = (command: any) => {
+    if (!command || typeof command !== 'object') return;
+
+    switch (command.command) {
+      case 'change_layout':
+        const stageMap = {
+          '1x1': '1x1',
+          '2x1': '2x1',
+          '2x2': '2x2',
+          '3x1': '3x1',
+        };
+        const stageId = stageMap[command.layout];
+        if (stageId) {
+          commandsManager.runCommand('setHangingProtocol', {
+            protocolId: '@ohif/mnGrid',
+            stageId: stageId,
+          });
+        } else {
+          console.warn('Unsupported layout:', command.layout);
+        }
+        break;
+
+      case 'activate_tool':
+        if (command.toolName) {
+          commandsManager.runCommand('setToolActive', { toolName: command.toolName });
+        }
+        break;
+
+      case 'viewport_action':
+        if (command.action === 'reset') {
+          commandsManager.runCommand('resetViewport');
+        } else if (command.action === 'invert') {
+          commandsManager.runCommand('invertViewport');
+        } else if (command.action === 'rotate') {
+          commandsManager.runCommand('rotateViewportCW');
+        }
+        break;
+
+      case 'open_panel':
+        commandsManager.runCommand('openPanel', { side: 'right', tabName: command.panel });
+        break;
+
+      case 'close_panel':
+        if (command.side === 'right') {
+          commandsManager.runCommand('closeRightPanel');
+        } else if (command.side === 'left') {
+          commandsManager.runCommand('closeLeftPanel');
+        }
+        break;
+
+      case 'show_version':
+        alert(`Viewer Version: ${process.env.VERSION_NUMBER} / ${process.env.COMMIT_HASH}`);
+        break;
+
+      default:
+        console.warn('Unknown LLM command:', command);
+    }
+  };
+
+  const handleSubmitVoiceInput = async () => {
+    const result = await sendPromptToLLM(voiceInput, "viewer");
+
+    if (result) {
+      setLlmResult(JSON.stringify(result));
+      handleLLMCommandForViewer(result); // <-- call viewer handler
+    } else {
+      alert('LLM 응답 실패');
+    }
+
+    setVoiceInput('');
+    handleCloseDialog();
+  };
+
 
   const onClickReturnButton = () => {
     const { pathname } = location;
@@ -222,6 +314,7 @@ function ViewerLayout({
         menuOptions={menuOptions}
         isReturnEnabled={!!appConfig.showStudyList}
         onClickReturnButton={onClickReturnButton}
+        onVoiceCommandClick={handleVoiceCommandClick}
         WhiteLabeling={appConfig.whiteLabeling}
       >
         <ErrorBoundary context="Primary Toolbar">
@@ -230,6 +323,43 @@ function ViewerLayout({
           </div>
         </ErrorBoundary>
       </Header>
+      {llmResult && (
+          <div className="p-4 bg-gray-800 text-white">
+            <strong>LLM 결과:</strong> {llmResult}
+          </div>
+      )}
+      {isVoiceDialogOpen && (
+          <Modal
+              isOpen={isVoiceDialogOpen}
+              onClose={handleCloseDialog}
+              title="Voice Command"
+              closeButton
+          >
+            <div className="p-4">
+      <textarea
+          className="w-full p-2 border rounded text-black"
+          rows={4}
+          placeholder="Type your voice command here..."
+          value={voiceInput}
+          onChange={(e) => setVoiceInput(e.target.value)}
+      />
+              <div className="mt-4 flex justify-end">
+                <button
+                    className="px-4 py-2 bg-primary-main text-white rounded"
+                    onClick={handleSubmitVoiceInput}
+                >
+                  Submit
+                </button>
+                <button
+                    className="ml-2 px-4 py-2 bg-gray-300 rounded"
+                    onClick={handleCloseDialog}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </Modal>
+      )}
       <div
         className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap relative"
         style={{ height: 'calc(100vh - 52px' }}
