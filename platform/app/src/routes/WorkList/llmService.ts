@@ -135,71 +135,80 @@ Thought: Trigger the upload component
 }
 
 `,
-  viewer: `You are a helpful assistant inside a medical image viewer. Convert user instructions into structured JSON commands. Supported commands include:
-
-- change_layout: Change the layout. Supported layouts include "1x1", "2x2".
-- activate_tool: Activate an imaging tool, e.g., "Zoom", "Pan", "WindowLevel", "Length", etc.
-- viewport_action: Perform actions on the current viewport like "reset", "invert", or "rotate".
-- open_panel: Open a side panel tab by its name, e.g., "Segmentation", "Measurements".
-- close_panel: Close a side panel by side ("left" or "right").
-- show_version: Show app version info.
-
-Respond ONLY in JSON format with fields like { "command": ..., other_fields... }
-
-### Examples
-
-Instruction: "Switch to a 2 by 2 layout"
-Thought: Set layout to 2x2.
-{
-  "command": "change_layout",
-  "layout": "2x2"
-}
-
-Instruction: "I want to use the zoom tool"
-Thought: Activate the Zoom tool.
-{
-  "command": "activate_tool",
-  "toolName": "Zoom"
-}
-
-Instruction: "Invert the current image"
-Thought: Apply invert action on viewport.
-{
-  "command": "viewport_action",
-  "action": "invert"
-}
-
-Instruction: "Reset the image"
-Thought: Reset viewport settings.
-{
-  "command": "viewport_action",
-  "action": "reset"
-}
-
-Instruction: "Rotate the image clockwise"
-Thought: Rotate the viewport 90 degrees clockwise.
-{
-  "command": "viewport_action",
-  "action": "rotate"
-}
-
-Instruction: "Open the segmentation panel"
-Thought: Open Segmentation tab on side panel.
-{
-  "command": "open_panel",
-  "panel": "Segmentation"
-}
-
-Instruction: "Close the right panel"
-Thought: Close right panel.
-{
-  "command": "close_panel",
-  "side": "right"
-}
-`,
+  viewer: `You are a helpful assistant inside a medical image viewer. Convert input into layout or interaction commands like: set_layout_2x2, delete_exam, open_series_1.`,
 };
 import { GoogleGenAI } from '@google/genai';
-const ai = new GoogleGenAI({ apiKey: "AIzaSyCusBeO3JeOamVNxJroxs_FNm6Aj7O320c" });
+const ai = new GoogleGenAI({ apiKey: "AIzaSyC_g84TnJ12_KdKo45IwMbKstk7xkXv074" });
+
+function levenshtein(a: string, b: string): number {
+  const dp: number[][] = Array.from({ length: a.length + 1 },
+    () => Array(b.length + 1).fill(0));
+
+  for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+  for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return dp[a.length][b.length];
+}
+
+// 2) 유사도 계산 (0.0~1.0, 1.0이 완벽 일치)
+function similarity(a: string, b: string): number {
+  const dist = levenshtein(a, b);
+  const maxLen = Math.max(a.length, b.length);
+  return maxLen === 0 ? 1 : 1 - dist / maxLen;
+}
+
+// 3) buildRAGContextFromStudies 대체 구현
+function buildRAGContextFromStudies(
+  studies: Study[],
+  promptText: string
+): string {
+  const query = promptText.trim().toLowerCase();
+
+  // 각 study에 대해 patientName 유사도 계산
+  const scored = studies.map(s => {
+    const name = s.patientName?.toLowerCase() ?? '';
+    return {
+      study: s,
+      score: similarity(query, name),
+    };
+  });
+
+  // 유사도 높은 순으로 정렬, threshold 이상(예: 0.5)인 것만 최대 5건
+  const candidates = scored
+    .filter(x => x.score >= 0.5)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5)
+    .map(x => x.study);
+
+  if (candidates.length === 0) return '';
+
+  // JSON 배열 문자열로 변환
+  const listJson = candidates
+    .map(s =>
+      `  { "patientName": "${s.patientName}", "studyInstanceUid": "${s.studyInstanceUid}" }`
+    )
+    .join(',\n');
+
+  return `
+### Context:
+Here are possible matching studies.
+Pick the one whose patientName best matches the user’s instruction (spelling/pronunciation).
+
+[
+${listJson}
+]
+`;
+}
 export async function sendPromptToLLM(
   promptText: string,
   context: 'worklist' | 'viewer' = 'worklist',
