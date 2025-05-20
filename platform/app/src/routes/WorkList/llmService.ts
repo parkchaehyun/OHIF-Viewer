@@ -9,6 +9,8 @@ const FEWSHOTS: Record<string, string> = {
 - show_version: Show app version info.
 - open_upload: Open the DICOM file upload dialog.
 
+If multiple patientName/UID pairs are provided in Context, choose the one most similar to the user’s input (spelling/pronunciation).
+
 Respond ONLY in JSON format with the fields { "command": ..., other_fields... }
 
 ### Examples
@@ -87,25 +89,25 @@ Thought: Again, user wants to clear filters
   "command": "clear_filters"
 }
 
-Instruction: "Open the study with ID 1.2.3.4"
-Thought: StudyInstanceUID provided directly
+Instruction: "Open the study for Neptune"
+Thought: Patient name is 'Neptune'. Use RAG context to find the UID.
 {
   "command": "open_study",
-  "studyInstanceUid": "1.2.3.4"
+  "studyInstanceUid": "1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5"
 }
 
-Instruction: "Show me that study 2.25.87.1"
-Thought: Parse the UID and open it
+Instruction: "Open the study for Horse"
+Thought: Patient name is 'Horse'. Use context to find the correct UID.
 {
   "command": "open_study",
-  "studyInstanceUid": "2.25.87.1"
+  "studyInstanceUid": "2.25.96975534054447904995905761963464388233"
 }
 
-Instruction: "Access study 3.14.159"
-Thought: Same intent to open
+Instruction: "Show me the scan of M1"
+Thought: Patient name is 'M1'. Use RAG context to locate UID.
 {
   "command": "open_study",
-  "studyInstanceUid": "3.14.159"
+  "studyInstanceUid": "2.25.232704420736447710317909004159492840763"
 }
 
 Instruction: "What's the version?"
@@ -136,18 +138,97 @@ Thought: Trigger the upload component
   viewer: `You are a helpful assistant inside a medical image viewer. Convert input into layout or interaction commands like: set_layout_2x2, delete_exam, open_series_1.`,
 };
 import { GoogleGenAI } from '@google/genai';
-const ai = new GoogleGenAI({ apiKey: "AIzaSyCusBeO3JeOamVNxJroxs_FNm6Aj7O320c" });
+const ai = new GoogleGenAI({ apiKey: "AIzaSyC_g84TnJ12_KdKo45IwMbKstk7xkXv074" });
+
+function levenshtein(a: string, b: string): number {
+  const dp: number[][] = Array.from({ length: a.length + 1 },
+    () => Array(b.length + 1).fill(0));
+
+  for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+  for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return dp[a.length][b.length];
+}
+
+// 2) 유사도 계산 (0.0~1.0, 1.0이 완벽 일치)
+function similarity(a: string, b: string): number {
+  const dist = levenshtein(a, b);
+  const maxLen = Math.max(a.length, b.length);
+  return maxLen === 0 ? 1 : 1 - dist / maxLen;
+}
+
+// 3) buildRAGContextFromStudies 대체 구현
+function buildRAGContextFromStudies(
+  studies: Study[],
+  promptText: string
+): string {
+  const query = promptText.trim().toLowerCase();
+
+  // 각 study에 대해 patientName 유사도 계산
+  const scored = studies.map(s => {
+    const name = s.patientName?.toLowerCase() ?? '';
+    return {
+      study: s,
+      score: similarity(query, name),
+    };
+  });
+
+  // 유사도 높은 순으로 정렬, threshold 이상(예: 0.5)인 것만 최대 5건
+  const candidates = scored
+    .filter(x => x.score >= 0.5)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5)
+    .map(x => x.study);
+
+  if (candidates.length === 0) return '';
+
+  // JSON 배열 문자열로 변환
+  const listJson = candidates
+    .map(s =>
+      `  { "patientName": "${s.patientName}", "studyInstanceUid": "${s.studyInstanceUid}" }`
+    )
+    .join(',\n');
+
+  return `
+### Context:
+Here are possible matching studies.
+Pick the one whose patientName best matches the user’s instruction (spelling/pronunciation).
+
+[
+${listJson}
+]
+`;
+}
 export async function sendPromptToLLM(
   promptText: string,
-  context: "worklist" | "viewer" = "worklist"
-): Promise<string | null> {
+  context: 'worklist' | 'viewer' = 'worklist',
+  studies: Study[] = []
+): Promise<any | null> {
   const fewshot = FEWSHOTS[context];
-  const fullPrompt = `${fewshot}\n\nUser: ${promptText}\nResponse:`;
+  const ragContext = buildRAGContextFromStudies(studies, promptText);
+  const fullPrompt = `${fewshot}\n${ragContext}\nUser: ${promptText}\nResponse:`;
+
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
-      contents: [fullPrompt],
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: fullPrompt }]
+        }
+      ]
     });
+
     let raw = response.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
     if (raw?.startsWith("```json") || raw?.startsWith("```")) {
       raw = raw.replace(/```json|```/g, "").trim();

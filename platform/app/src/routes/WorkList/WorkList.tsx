@@ -164,7 +164,7 @@ function WorkList({
   };
 
   const handleSubmitVoiceInput = async () => {
-    const result = await sendPromptToLLM(voiceInput, "worklist");
+    const result = await sendPromptToLLM(voiceInput, "worklist", studies);
 
     if (result) {
       setLlmResult(JSON.stringify(result));
