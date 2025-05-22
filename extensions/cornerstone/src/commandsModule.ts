@@ -618,6 +618,117 @@ function commandsModule({
       );
       toolGroup.setToolEnabled(ReferenceLinesTool.toolName);
     },
+    downloadViewportImage: () => {
+      const enabledElement = _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+      const canvas = viewport.canvas;
+
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = `viewport-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
+    forceZoom({ direction = 'in', intensity = 1, dx = 0, dy = 0 }) {
+      const enabledElement = getActiveViewportEnabledElement(viewportGridService);
+      if (!enabledElement) return;
+
+      const { viewport } = enabledElement;
+      if (!(viewport instanceof StackViewport)) return;
+
+      const factor = direction === 'in' ? 0.9 : 1.1;
+      const spacing = viewport.getSpacing?.() || [1, 1, 1];
+
+      const camera = viewport.getCamera();
+      let newScale = camera.parallelScale;
+
+      // Direction vectors
+      const cameraRight = viewport.getCameraRight?.() || [1, 0, 0];
+      const cameraUp = viewport.getCameraUp?.() || [0, 1, 0];
+
+      const panX = 30 * dx * spacing[0];
+      const panY = 30 * (-dy) * spacing[1];
+
+      const delta = [
+        cameraRight[0] * panX + cameraUp[0] * panY,
+        cameraRight[1] * panX + cameraUp[1] * panY,
+        cameraRight[2] * panX + cameraUp[2] * panY,
+      ];
+
+      const position = [...camera.position];
+      const focalPoint = [...camera.focalPoint];
+
+      for (let i = 0; i < intensity; i++) {
+        newScale *= factor;
+
+        position[0] += delta[0];
+        position[1] += delta[1];
+        position[2] += delta[2];
+
+        focalPoint[0] += delta[0];
+        focalPoint[1] += delta[1];
+        focalPoint[2] += delta[2];
+      }
+
+      viewport.setCamera({
+        parallelScale: newScale,
+        position,
+        focalPoint,
+      });
+
+      viewport.render();
+    },
+
+    panViewport({ dx = 0, dy = 0 }) {
+      const enabledElement = getActiveViewportEnabledElement(viewportGridService);
+      if (!enabledElement) return;
+
+      const { viewport } = enabledElement;
+      if (!(viewport instanceof StackViewport)) return;
+
+      const camera = viewport.getCamera();
+
+      const spacing = viewport.getSpacing?.() || [1, 1, 1]; // fallback if spacing is not available
+
+      // Get direction vectors — fallback to X/Y axes if missing
+      const cameraRight = viewport.getCameraRight?.() || [1, 0, 0];
+      const cameraUp = viewport.getCameraUp?.() || [0, 1, 0];
+
+      const panX = -dx * spacing[0];
+      const panY = dy * spacing[1];
+
+      const delta = [
+        cameraRight[0] * panX + cameraUp[0] * panY,
+        cameraRight[1] * panX + cameraUp[1] * panY,
+        cameraRight[2] * panX + cameraUp[2] * panY,
+      ];
+
+      const newPosition = [
+        camera.position[0] + delta[0],
+        camera.position[1] + delta[1],
+        camera.position[2] + delta[2],
+      ];
+
+      const newFocalPoint = [
+        camera.focalPoint[0] + delta[0],
+        camera.focalPoint[1] + delta[1],
+        camera.focalPoint[2] + delta[2],
+      ];
+
+      viewport.setCamera({
+        position: newPosition,
+        focalPoint: newFocalPoint,
+      });
+
+      viewport.render();
+    },
+
   };
 
   const definitions = {
@@ -741,6 +852,15 @@ function commandsModule({
     },
     toggleReferenceLines: {
       commandFn: actions.toggleReferenceLines,
+    },
+    downloadViewportImage: {
+      commandFn: actions.downloadViewportImage,
+    },
+    forceZoom: {
+      commandFn: actions.forceZoom,
+    },
+    panViewport: {
+      commandFn: actions.panViewport,
     },
   };
 

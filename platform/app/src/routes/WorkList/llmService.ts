@@ -135,7 +135,81 @@ Thought: Trigger the upload component
 }
 
 `,
-  viewer: `You are a helpful assistant inside a medical image viewer. Convert input into layout or interaction commands like: set_layout_2x2, delete_exam, open_series_1.`,
+  viewer: `You are a helpful assistant inside a medical image viewer. Convert user instructions into structured JSON commands. Supported commands include:
+
+- change_layout: Change the layout. Supported layouts include "1x1", "2x2".
+
+Respond ONLY in JSON format with fields like { "command": ..., other_fields... }
+
+### Examples
+
+Instruction: "Switch to a 2 by 2 layout"
+Thought: Set layout to 2x2.
+{
+  "command": "change_layout",
+  "layout": "2x2"
+}
+
+Instruction: "Rotate the image right 90 degrees"
+Thought: Issue a rotate right 90 command
+{
+  "command": "rotate_view",
+  "direction": "right",
+  "angle": 90
+}
+
+Instruction: "Zoom in 3 times toward the upper left"
+Thought: Direction is in, intensity 3, upper-left corresponds to dx -1 and dy 1
+{
+  "command": "zoom_view",
+  "direction": "in",
+  "intensity": 3,
+  "dx": -1,
+  "dy": 1
+}
+
+
+Instruction: "Play the series"
+Thought: Enable cine playback
+{
+  "command": "play_cine"
+}
+
+Instruction: "Stop playing"
+Thought: Stop cine playback
+{
+  "command": "stop_cine"
+}
+
+Instruction: "Download the image"
+Thought: Trigger download without modal
+{
+  "command": "download_image"
+}
+
+Instruction: "Move the image up"
+Thought: Pan the image up (positive y screen direction)
+{
+  "command": "pan_view",
+  "dx": 0,
+  "dy": -50
+}
+
+Instruction: "Shift view right"
+Thought: Pan right in screen space
+{
+  "command": "pan_view",
+  "dx": 50,
+  "dy": 0
+}
+
+Instruction: "Reset the view"
+Thought: User wants to reset zoom and pan to default view
+{
+  "command": "reset_view"
+}
+
+`,
 };
 import { GoogleGenAI } from '@google/genai';
 const ai = new GoogleGenAI({ apiKey: "AIzaSyC_g84TnJ12_KdKo45IwMbKstk7xkXv074" });

@@ -83,36 +83,65 @@ function ViewerLayout({
         }
         break;
 
-      case 'activate_tool':
-        if (command.toolName) {
-          commandsManager.runCommand('setToolActive', { toolName: command.toolName });
+      case 'rotate_view': {
+        const { direction, angle } = command;
+
+        if (![90, 180, 270].includes(angle)) {
+          console.warn('Invalid angle:', angle);
+          return;
+        }
+
+        const rotateCommand = direction === 'right' ? 'rotateViewportCW' : 'rotateViewportCCW';
+
+        const times = angle / 90;
+        for (let i = 0; i < times; i++) {
+          commandsManager.runCommand(rotateCommand, {
+            context: 'CORNERSTONE',
+          });
         }
         break;
+      }
 
-      case 'viewport_action':
-        if (command.action === 'reset') {
-          commandsManager.runCommand('resetViewport');
-        } else if (command.action === 'invert') {
-          commandsManager.runCommand('invertViewport');
-        } else if (command.action === 'rotate') {
-          commandsManager.runCommand('rotateViewportCW');
-        }
+      case 'zoom_view': {
+        const direction = command.direction === 'out' ? 'out' : 'in';
+        const intensity = Number.isInteger(command.intensity) ? command.intensity : 1;
+        const dx = Number(command.dx) || 0;
+        const dy = Number(command.dy) || 0;
+
+        commandsManager.runCommand('forceZoom', {
+          direction,
+          intensity,
+          dx,
+          dy,
+        });
+        break;
+      }
+
+      case 'play_cine': {
+        const { cineService, viewportGridService } = servicesManager.services;
+        const { activeViewportIndex } = viewportGridService.getState();
+        cineService.setCine({ id: activeViewportIndex, isPlaying: true });
+        break;
+      }
+
+      case 'stop_cine': {
+        const { cineService, viewportGridService } = servicesManager.services;
+        const { activeViewportIndex } = viewportGridService.getState();
+        cineService.setCine({ id: activeViewportIndex, isPlaying: false });
+        break;
+      }
+
+      case 'download_image':
+        commandsManager.runCommand('downloadViewportImage');
         break;
 
-      case 'open_panel':
-        commandsManager.runCommand('openPanel', { side: 'right', tabName: command.panel });
+      case 'pan_view':
+        const { dx = 0, dy = 0 } = command;
+        commandsManager.runCommand('panViewport', { dx, dy });
         break;
 
-      case 'close_panel':
-        if (command.side === 'right') {
-          commandsManager.runCommand('closeRightPanel');
-        } else if (command.side === 'left') {
-          commandsManager.runCommand('closeLeftPanel');
-        }
-        break;
-
-      case 'show_version':
-        alert(`Viewer Version: ${process.env.VERSION_NUMBER} / ${process.env.COMMIT_HASH}`);
+      case 'reset_view':
+        commandsManager.runCommand('resetViewport');
         break;
 
       default:
