@@ -1,3 +1,5 @@
+import { GoogleGenAI } from '@google/genai';
+
 const FEWSHOTS: Record<string, string> = {
   worklist: `You are a helpful PACS assistant in a medical study list viewer. Convert user instructions into structured JSON commands. Supported commands include:
 
@@ -75,13 +77,11 @@ Thought: Sort by studyDate in descending order
   "sortDirection": "descending"
 }
 
-
 Instruction: "Clear all filters"
 Thought: Reset all filtering values
 {
   "command": "clear_filters"
 }
-
 
 Instruction: "Remove the filters"
 Thought: Again, user wants to clear filters
@@ -116,28 +116,50 @@ Thought: User is asking for version information
   "command": "show_version"
 }
 
-Instruction: "Show version info"
-Thought: Same request for app version
-{
-  "command": "show_version"
-}
-
 Instruction: "Upload a DICOM file"
 Thought: Open the upload UI
 {
   "command": "open_upload"
 }
 
-Instruction: "I want to upload a study"
-Thought: Trigger the upload component
+Instruction: "open second study"
+Thought: The user wants to open the study at index 2 on the current page. I will look at the current_page list, find the study with "index": 2, and return its studyInstanceUid using the open_study command.
 {
-  "command": "open_upload"
+  "command": "open_study",
+  "studyInstanceUid": "1.2.840.113619.2.55.3.604688987.456.1598907161.467"
 }
 
+Instruction: "open third patient"
+Thought: third corresponds to index 3. I'll check the current_page array for the object with index 3, then extract and return its studyInstanceUid in the open_study command.
+{
+  "command": "open_study",
+  "studyInstanceUid": "2.16.840.1.113669.632.20.1211.10000512915"
+}
+
+Instruction: "open first ct study in this page"
+Thought: The user wants to open the first study on the visible page. I will find the entry in current_page where index is 1, and use its studyInstanceUid.
+{
+  "command": "open_study",
+  "studyInstanceUid": "1.3.12.2.1107.5.1.4.49655.30000024030112345678900000123"
+}
+
+Instruction: "10번째 영상 열어줘"
+Thought: Only 3 studies are shown in current_page. Index 10 is invalid.
+{
+  "command": "error",
+  "message": "Invalid index: no such study on the current page"
+}
 `,
-  viewer: `You are a helpful assistant inside a medical image viewer. Convert user instructions into structured JSON commands. Supported commands include:
+
+  viewer: `You are a helpful assistant inside a medical image viewer. Convert input into layout or interaction commands. Supported commands include:
 
 - change_layout: Change the layout. Supported layouts include "1x1", "2x2".
+- rotate_view: Rotate the image. Use direction (left/right) and angle.
+- pan_view: Move the image in screen space. Use dx and dy.
+- zoom_view: Zoom in/out with direction, intensity, and optional dx/dy.
+- play_cine / stop_cine: Start/stop playback.
+- download_image: Download the current view.
+- reset_view: Reset pan/zoom.
 
 Respond ONLY in JSON format with fields like { "command": ..., other_fields... }
 
@@ -167,7 +189,6 @@ Thought: Direction is in, intensity 3, upper-left corresponds to dx -1 and dy 1
   "dx": -1,
   "dy": 1
 }
-
 
 Instruction: "Play the series"
 Thought: Enable cine playback
@@ -208,12 +229,10 @@ Thought: User wants to reset zoom and pan to default view
 {
   "command": "reset_view"
 }
-
-`,
+`
 };
-import { GoogleGenAI } from '@google/genai';
-const ai = new GoogleGenAI({ apiKey: "AIzaSyC_g84TnJ12_KdKo45IwMbKstk7xkXv074" });
 
+// 유사도 계산 도구
 function levenshtein(a: string, b: string): number {
   const dp: number[][] = Array.from({ length: a.length + 1 },
     () => Array(b.length + 1).fill(0));
@@ -234,21 +253,18 @@ function levenshtein(a: string, b: string): number {
   return dp[a.length][b.length];
 }
 
-// 2) 유사도 계산 (0.0~1.0, 1.0이 완벽 일치)
 function similarity(a: string, b: string): number {
   const dist = levenshtein(a, b);
   const maxLen = Math.max(a.length, b.length);
   return maxLen === 0 ? 1 : 1 - dist / maxLen;
 }
 
-// 3) buildRAGContextFromStudies 대체 구현
 function buildRAGContextFromStudies(
   studies: Study[],
   promptText: string
 ): string {
   const query = promptText.trim().toLowerCase();
 
-  // 각 study에 대해 patientName 유사도 계산
   const scored = studies.map(s => {
     const name = s.patientName?.toLowerCase() ?? '';
     return {
@@ -257,7 +273,6 @@ function buildRAGContextFromStudies(
     };
   });
 
-  // 유사도 높은 순으로 정렬, threshold 이상(예: 0.5)인 것만 최대 5건
   const candidates = scored
     .filter(x => x.score >= 0.5)
     .sort((a, b) => b.score - a.score)
@@ -266,7 +281,6 @@ function buildRAGContextFromStudies(
 
   if (candidates.length === 0) return '';
 
-  // JSON 배열 문자열로 변환
   const listJson = candidates
     .map(s =>
       `  { "patientName": "${s.patientName}", "studyInstanceUid": "${s.studyInstanceUid}" }`
@@ -283,14 +297,42 @@ ${listJson}
 ]
 `;
 }
+
+function buildCurrentPageContext(currentPageStudies: Study[]): string {
+  if (!currentPageStudies.length) return '';
+
+  const items = currentPageStudies.map((s, idx) => {
+    return `  { "index": ${idx + 1}, "patientName": "${s.patientName}", "studyInstanceUid": "${s.studyInstanceUid}" }`;
+  });
+
+  return `
+### current_page:
+These are the studies currently visible on screen (1-based index):
+[
+${items.join(',\n')}
+]
+
+Instructions:
+- Only return the UID of a study if the user's requested index exists in this list.
+- If the user requests an index not listed here (e.g., "10th study" but only 3 are shown), do NOT return any studyInstanceUid. Instead, respond with:
+{
+  "command": "error",
+  "message": "Invalid index: no such study on the current page"
+}
+`;
+}
+
 export async function sendPromptToLLM(
   promptText: string,
   context: 'worklist' | 'viewer' = 'worklist',
-  studies: Study[] = []
+  studies: Study[] = [],
+  currentPageStudies: Study[] = []
 ): Promise<any | null> {
   const fewshot = FEWSHOTS[context];
   const ragContext = buildRAGContextFromStudies(studies, promptText);
-  const fullPrompt = `${fewshot}\n${ragContext}\nUser: ${promptText}\nResponse:`;
+  const currentPageContext = buildCurrentPageContext(currentPageStudies);
+
+  const fullPrompt = `${fewshot}\n${ragContext}\n${currentPageContext}\nUser: ${promptText}\nResponse:`;
 
   try {
     const response = await ai.models.generateContent({

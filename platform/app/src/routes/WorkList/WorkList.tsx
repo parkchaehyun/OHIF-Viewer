@@ -91,6 +91,7 @@ function WorkList({
     setFilterValues(newFilters);
     onRefresh();
   }
+
   function handleLLMCommand(command: any) {
     if (!command || typeof command !== 'object') return;
 
@@ -144,6 +145,12 @@ function WorkList({
         alert(`레이아웃 요청: ${command.layout}`);
         break;
 
+      case 'error':
+        if (command.message) {
+          alert(`LLM 오류 응답: ${command.message}`);
+        }
+        break;
+
       default:
         console.warn('알 수 없는 명령:', command);
     }
@@ -162,9 +169,10 @@ function WorkList({
   const handleCloseDialog = () => {
     setIsVoiceDialogOpen(false);
   };
-
+  const start = (filterValues.pageNumber - 1) * filterValues.resultsPerPage;
+  const currentPageStudies = studies.slice(start, start + filterValues.resultsPerPage);
   const handleSubmitVoiceInput = async () => {
-    const result = await sendPromptToLLM(voiceInput, "worklist", studies);
+    const result = await sendPromptToLLM(voiceInput, "worklist", studies, currentPageStudies);
 
     if (result) {
       setLlmResult(JSON.stringify(result));
