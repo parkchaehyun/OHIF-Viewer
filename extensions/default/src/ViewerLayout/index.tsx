@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
-import { sendPromptToLLM } from '../../../../platform/app/src/routes/WorkList/llmService';
+import { sendPromptToLLM, transcribeAudio, translateToEnglish } from '../../../../platform/app/src/routes/WorkList/llmService';
+import { useRecorder } from '../../../../platform/app/src/routes/WorkList/useRecorder';
 
 import {
   SidePanel,
@@ -51,9 +52,15 @@ function ViewerLayout({
   const location = useLocation();
   const [llmResult, setLlmResult] = useState<string | null>(null);
 
-
+  const {
+    recording,
+    audioBlob,
+    start: startRecording,
+    stop: stopRecording,
+  } = useRecorder();
 
   const handleVoiceCommandClick = () => {
+    startRecording();
     setIsVoiceDialogOpen(true);
   };
 
@@ -150,16 +157,45 @@ function ViewerLayout({
   };
 
   const handleSubmitVoiceInput = async () => {
-    const result = await sendPromptToLLM(voiceInput, "viewer");
+    let text = voiceInput.trim();
+
+    if (text) {
+
+    } else {
+      const recordedBlob = await stopRecording();
+      if (!recordedBlob) {
+        alert("녹음 중 오류가 발생했습니다.");
+        return;
+      }
+      try {
+        text = await transcribeAudio(recordedBlob);
+      } catch (e) {
+        console.error("STT 실패:", e);
+        alert("음성 인식에 실패했습니다.");
+        return;
+      }
+    }
+
+    if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(text)) {
+      try {
+        text = await translateToEnglish(text);
+      } catch (e) {
+        console.error("번역 실패:", e);
+        alert("번역에 실패했습니다.");
+        return;
+      }
+    }
+
+    const result = await sendPromptToLLM(text, "viewer");
 
     if (result) {
       setLlmResult(JSON.stringify(result));
-      handleLLMCommandForViewer(result); // <-- call viewer handler
+      handleLLMCommandForViewer(result);
     } else {
-      alert('LLM 응답 실패');
+      setLlmResult("응답 실패");
     }
 
-    setVoiceInput('');
+    setVoiceInput("");
     handleCloseDialog();
   };
 
@@ -353,41 +389,44 @@ function ViewerLayout({
         </ErrorBoundary>
       </Header>
       {llmResult && (
-          <div className="p-4 bg-gray-800 text-white">
-            <strong>LLM 결과:</strong> {llmResult}
-          </div>
+        <div className="p-4 bg-gray-800 text-white">
+          <strong>LLM 결과:</strong> {llmResult}
+        </div>
       )}
       {isVoiceDialogOpen && (
-          <Modal
-              isOpen={isVoiceDialogOpen}
-              onClose={handleCloseDialog}
-              title="Voice Command"
-              closeButton
-          >
-            <div className="p-4">
-      <textarea
-          className="w-full p-2 border rounded text-black"
-          rows={4}
-          placeholder="Type your voice command here..."
-          value={voiceInput}
-          onChange={(e) => setVoiceInput(e.target.value)}
-      />
-              <div className="mt-4 flex justify-end">
-                <button
-                    className="px-4 py-2 bg-primary-main text-white rounded"
-                    onClick={handleSubmitVoiceInput}
-                >
-                  Submit
-                </button>
-                <button
-                    className="ml-2 px-4 py-2 bg-gray-300 rounded"
-                    onClick={handleCloseDialog}
-                >
-                  Cancel
-                </button>
-              </div>
+        <Modal
+          isOpen={isVoiceDialogOpen}
+          onClose={handleCloseDialog}
+          title="Voice Command"
+          closeButton
+        >
+          <div className="p-4">
+            <p className="mb-2 text-center">
+              {recording ? '🔴 녹음 중...' : '🔈 대기 중...'}
+            </p>
+            <textarea
+              className="w-full p-2 border rounded text-black"
+              rows={4}
+              placeholder="Type your voice command here..."
+              value={voiceInput}
+              onChange={(e) => setVoiceInput(e.target.value)}
+            />
+            <div className="mt-4 flex justify-end">
+              <button
+                className="px-4 py-2 bg-primary-main text-white rounded"
+                onClick={handleSubmitVoiceInput}
+              >
+                Submit
+              </button>
+              <button
+                className="ml-2 px-4 py-2 bg-gray-300 rounded"
+                onClick={handleCloseDialog}
+              >
+                Cancel
+              </button>
             </div>
-          </Modal>
+          </div>
+        </Modal>
       )}
       <div
         className="bg-black flex flex-row items-stretch w-full overflow-hidden flex-nowrap relative"

@@ -11,6 +11,7 @@ import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
 import { utils, hotkeys, ServicesManager } from '@ohif/core';
+import { useRecorder } from './useRecorder';
 
 import {
   Icon,
@@ -31,7 +32,7 @@ import {
 
 import i18n from '@ohif/i18n';
 
-import { sendPromptToLLM } from './llmService'; //llm연결
+import { sendPromptToLLM, transcribeAudio, translateToEnglish } from './llmService'; //llm연결
 
 const { sortBySeriesDate } = utils;
 
@@ -58,6 +59,13 @@ function WorkList({
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
+  const {
+    recording,
+    audioBlob,
+    start: startRecording,
+    stop: stopRecording,
+  } = useRecorder();
+
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
@@ -163,6 +171,7 @@ function WorkList({
 
   // Voice command handlers
   const handleVoiceCommandClick = () => {
+    startRecording();
     setIsVoiceDialogOpen(true);
   };
 
@@ -172,7 +181,43 @@ function WorkList({
   const start = (filterValues.pageNumber - 1) * filterValues.resultsPerPage;
   const currentPageStudies = studies.slice(start, start + filterValues.resultsPerPage);
   const handleSubmitVoiceInput = async () => {
-    const result = await sendPromptToLLM(voiceInput, "worklist", studies, currentPageStudies);
+    const recordedBlob = await stopRecording();
+
+    let text = voiceInput.trim();
+    if (!text) {
+      if (!recordedBlob) {
+        alert("녹음 중 오류가 발생했습니다.");
+        return;
+      }
+      try {
+        text = await transcribeAudio(recordedBlob);
+      } catch (e) {
+        console.error("STT 실패:", e);
+        alert("음성 인식에 실패했습니다.");
+        return;
+      }
+      if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(text)) {
+        try {
+          text = await translateToEnglish(text);
+        } catch (e) {
+          console.error("번역 실패:", e);
+          alert("번역에 실패했습니다.");
+          return;
+        }
+      }
+    }
+
+    let result = null;
+    try {
+      result = await sendPromptToLLM(
+        text,
+        "worklist",
+        studies,
+        currentPageStudies
+      );
+    } catch (e) {
+      console.error("LLM 요청 실패:", e);
+    }
 
     if (result) {
       setLlmResult(JSON.stringify(result));
@@ -181,11 +226,9 @@ function WorkList({
       setLlmResult("응답 실패");
     }
 
-    setVoiceInput('');
+    setVoiceInput("");
     handleCloseDialog();
   };
-
-
 
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
@@ -654,6 +697,9 @@ function WorkList({
             closeButton
           >
             <div className="p-4">
+              <p className="mb-2 text-center">
+                {recording ? '🔴 녹음 중...' : '🔈 대기 중...'}
+              </p>
               <textarea
                 className="w-full p-2 border rounded text-black" // <-- add this class
                 rows={4}

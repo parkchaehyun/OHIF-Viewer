@@ -1,4 +1,46 @@
 import { GoogleGenAI } from '@google/genai';
+import { OpenAI } from 'openai';
+
+
+export const openai = new OpenAI({
+  apiKey: OPENAI_KEY,
+  dangerouslyAllowBrowser: true,
+});
+
+// Whisper STT
+export async function transcribeAudio(file: Blob): Promise<string> {
+  const form = new FormData();
+  form.append('file', file, 'recording.webm');
+  form.append('model', 'whisper-1');
+
+  const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${OPENAI_KEY}` },
+    body: form,
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return (await res.json()).text;
+}
+
+// GPT 번역
+export async function translateToEnglish(text: string): Promise<string> {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${OPENAI_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        { role: 'system', content: 'Translate the following text to English.' },
+        { role: 'user', content: text },
+      ],
+    }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return (await res.json()).choices[0].message.content;
+}
 
 const FEWSHOTS: Record<string, string> = {
   worklist: `You are a helpful PACS assistant in a medical study list viewer. Convert user instructions into structured JSON commands. Supported commands include:
