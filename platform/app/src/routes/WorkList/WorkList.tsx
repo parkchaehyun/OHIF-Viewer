@@ -56,6 +56,7 @@ function WorkList({
 }) {
   // WorkList.tsx 상단(함수 컴포넌트 내부)에 useState를 import한 상태에서:
   const [llmResult, setLlmResult] = useState<string | null>(null);
+  const [macros, setMacros] = useState<Record<string, any[]>>({});
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
@@ -65,6 +66,48 @@ function WorkList({
     start: startRecording,
     stop: stopRecording,
   } = useRecorder();
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // Tiny delay helper so React can flush state / network calls can resolve
+  const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+  /**
+   * runCommandsSequence(commandsArray):
+   *  - Executes each command in the array in series (awaiting each).
+   *  - Used by `run_sequence`.
+   */
+  const runCommandsSequence = async (commandsArray: any[]): Promise<void> => {
+    if (!Array.isArray(commandsArray)) {
+      console.warn('runCommandsSequence expects an array of commands.');
+      return;
+    }
+
+    for (let cmd of commandsArray) {
+      // If this is an open_study step and has the placeholder, interpolate it:
+      if (
+        cmd.command === 'open_study' &&
+        typeof cmd.studyInstanceUid === 'string' &&
+        cmd.studyInstanceUid.match(/^\{\{studies\[0\]\.studyInstanceUid\}\}$/)
+      ) {
+        // Ensure we have at least one study on the current page:
+        if (studies.length > 0 && studies[0].studyInstanceUid) {
+          cmd = {
+            ...cmd,
+            studyInstanceUid: studies[0].studyInstanceUid,
+          };
+        } else {
+          console.warn(
+            "runCommandsSequence: tried to interpolate '{{studies[0].studyInstanceUid}}' but no studies are loaded."
+          );
+          // Let handleLLMCommand produce an error or skip
+        }
+      }
+
+      await handleLLMCommand(cmd);
+      await delay(100);
+    }
+  };
+
 
   // ~ Modes
   const [appConfig] = useAppConfig();
@@ -100,17 +143,72 @@ function WorkList({
     onRefresh();
   }
 
-  function handleLLMCommand(command: any) {
+  async function handleLLMCommand(command: any): Promise<void> {
     if (!command || typeof command !== 'object') return;
 
     switch (command.command) {
+      // ──────────────────────────────────────────────────────────────────────────
+      // run_sequence: Ad hoc execution of inline steps array.
+      // Usage: { command: "run_sequence", steps: [ {...}, {...}, … ] }
+      case 'run_sequence': {
+        const { steps } = command as any;
+        if (!Array.isArray(steps)) {
+          console.warn('run_sequence expects an array of steps.');
+          break;
+        }
+        await runCommandsSequence(steps);
+        break;
+      }
+      // ──────────────────────────────────────────────────────────────────────────
+
+      // ──────────────────────────────────────────────────────────────────────────
+      // perform_macro: Only accepts { macroName: string } to look up a named macro.
+      case 'perform_macro': {
+        const { macroName } = command as any;
+        if (typeof macroName !== 'string') {
+          console.warn('perform_macro requires a macroName string.');
+          break;
+        }
+        const macroSteps = macros[macroName];
+        if (!Array.isArray(macroSteps)) {
+          console.warn(`Macro '${macroName}' not defined.`);
+          break;
+        }
+        await runCommandsSequence(macroSteps);
+        break;
+      }
+      // ──────────────────────────────────────────────────────────────────────────
+
+      // ──────────────────────────────────────────────────────────────────────────
+      // define_macro: store an array of steps under macros[macroName]
+      case 'define_macro': {
+        const { macroName, steps } = command as any;
+        if (typeof macroName !== 'string' || !Array.isArray(steps)) {
+          console.warn('define_macro requires a string macroName and an array of steps.');
+          break;
+        }
+        setMacros((prev) => ({ ...prev, [macroName]: steps }));
+        console.log(`Macro '${macroName}' defined with ${steps.length} steps.`);
+        break;
+      }
+      // ──────────────────────────────────────────────────────────────────────────
+
       case 'filter':
         applyLLMFilters(command);
+        // If applyLLMFilters triggers onRefresh() (network call), give React a tick:
+        if (typeof onRefresh === 'function') {
+          // onRefresh does not return a Promise, so we at least wait one micro‐tick:
+          await delay(0);
+        }
         break;
 
       case 'go_to_page':
         if (typeof command.pageNumber === 'number') {
           setFilterValues(prev => ({ ...prev, pageNumber: command.pageNumber }));
+          // If changing pageNumber calls onRefresh internally, wait one tick:
+          await delay(0);
+
+          await onRefresh();
         }
         break;
 
@@ -121,11 +219,20 @@ function WorkList({
             sortBy: command.sortBy,
             sortDirection: command.sortDirection,
           }));
+          // After state change, wait one tick so React can re-render and then refresh:
+          await delay(0);
+          if (typeof onRefresh === 'function') {
+            await Promise.resolve(onRefresh());
+          }
         }
         break;
 
       case 'clear_filters':
         setFilterValues(defaultFilterValues);
+        // Wait one tick if clearing also triggers onRefresh:
+        if (typeof onRefresh === 'function') {
+          await delay(0);
+        }
         break;
 
       case 'open_study':

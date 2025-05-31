@@ -196,6 +196,97 @@ Thought: Only 3 studies are shown in current_page. Index 10 is invalid.
   "command": "error",
   "message": "Invalid index: no such study on the current page"
 }
+
+Instruction: "Run these together: go to page 3, then filter by patient 'Kim', then sort by date descending"
+Thought: We want to execute three steps in sequence without saving a macro.
+{
+  "command": "run_sequence",
+  "steps": [
+    {
+      "command": "go_to_page",
+      "pageNumber": 3
+    },
+    {
+      "command": "filter",
+      "patientName": "Kim"
+    },
+    {
+      "command": "sort",
+      "sortBy": "studyDate",
+      "sortDirection": "descending"
+    }
+  ]
+}
+
+Instruction: "Define a macro named A that opens the latest study"
+Thought: We store the two‐step sequence under macro "A".
+{
+  "command": "define_macro",
+  "macroName": "A",
+  "steps": [
+    {
+      "command": "sort",
+      "sortBy": "studyDate",
+      "sortDirection": "descending"
+    },
+    {
+      "command": "open_study",
+      "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
+    }
+  ]
+}
+
+Instruction: "Perform macro A"
+Thought: We want to run the previously defined macro "A".
+{
+  "command": "perform_macro",
+  "macroName": "A"
+}
+
+Instruction: "Define a macro named B that goes to page 1, clears filters, and sorts by patientName ascending"
+Thought: Store a three‐step sequence under macro "B".
+{
+  "command": "define_macro",
+  "macroName": "B",
+  "steps": [
+    {
+      "command": "go_to_page",
+      "pageNumber": 1
+    },
+    {
+      "command": "clear_filters"
+    },
+    {
+      "command": "sort",
+      "sortBy": "patientName",
+      "sortDirection": "ascending"
+    }
+  ]
+}
+
+Instruction: "Run macro B"
+Thought: Execute macro "B" (page 1 → clear → sort).
+{
+  "command": "perform_macro",
+  "macroName": "B"
+}
+
+Instruction: "Go to the second page and open the first study"
+Thought: Change to page 2, then open the top study on that page.
+{
+  "command": "run_sequence",
+  "steps": [
+    {
+      "command": "go_to_page",
+      "pageNumber": 2
+    },
+    {
+      "command": "open_study",
+      "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
+    }
+  ]
+}
+
 `,
 
   viewer: `You are a helpful assistant inside a medical image viewer. Convert input into layout or interaction commands. Supported commands include:
@@ -276,6 +367,91 @@ Thought: User wants to reset zoom and pan to default view
 {
   "command": "reset_view"
 }
+
+Instruction: "Run these together: switch to 2x2, then zoom in twice, then download"
+Thought: We want three viewer commands in one shot without saving a macro.
+{
+  "command": "run_sequence",
+  "steps": [
+    {
+      "command": "change_layout",
+      "layout": "2x2"
+    },
+    {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    },
+    {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    },
+    {
+      "command": "download_image"
+    }
+  ]
+}
+
+Instruction: "Define a macro named V1 that resets view and stops cine"
+Thought: Save a two‐step macro called "V1".
+{
+  "command": "define_macro",
+  "macroName": "V1",
+  "steps": [
+    {
+      "command": "reset_view"
+    },
+    {
+      "command": "stop_cine"
+    }
+  ]
+}
+
+Instruction: "Perform macro V1"
+Thought: Execute the named macro "V1" (reset + stop).
+{
+  "command": "perform_macro",
+  "macroName": "V1"
+}
+
+Instruction: "Define macro V2 to pan up 50, pan right 50, and zoom out once"
+Thought: Store three viewer steps under macro "V2".
+{
+  "command": "define_macro",
+  "macroName": "V2",
+  "steps": [
+    {
+      "command": "pan_view",
+      "dx": 0,
+      "dy": -50
+    },
+    {
+      "command": "pan_view",
+      "dx": 50,
+      "dy": 0
+    },
+    {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    }
+  ]
+}
+
+Instruction: "Run macro V2"
+Thought: Execute macro V2 (pan up → pan right → zoom out).
+{
+  "command": "perform_macro",
+  "macroName": "V2"
+}
+
 `
 };
 

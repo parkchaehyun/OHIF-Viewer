@@ -46,6 +46,26 @@ function ViewerLayout({
 }): React.FunctionComponent {
   const [isVoiceDialogOpen, setIsVoiceDialogOpen] = useState(false);
   const [voiceInput, setVoiceInput] = useState('');
+  const [viewerMacros, setViewerMacros] = useState<Record<string, any[]>>({});
+  const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+  /**
+   * runViewerCommandsSequence(commandsArray):
+   *   - commandsArray: array of viewer‐style commands (e.g. change_layout, zoom_view, etc.)
+   *   - Calls handleLLMCommandForViewer(cmd) one by one, awaiting each
+   */
+  const runViewerCommandsSequence = async (commandsArray: any[]): Promise<void> => {
+    if (!Array.isArray(commandsArray)) {
+      console.warn('runViewerCommandsSequence expects an array of commands.');
+      return;
+    }
+    for (const cmd of commandsArray) {
+      await handleLLMCommandForViewer(cmd);
+      await delay(50);
+    }
+  };
+  // ────────────────────────────────────────────────────────────────────────────
+
 
   const [appConfig] = useAppConfig();
   const navigate = useNavigate();
@@ -68,10 +88,56 @@ function ViewerLayout({
     setIsVoiceDialogOpen(false);
   };
 
-  const handleLLMCommandForViewer = (command: any) => {
+  const handleLLMCommandForViewer = async (command: any): Promise<void> => {
     if (!command || typeof command !== 'object') return;
 
     switch (command.command) {
+      // ──────────────────────────────────────────────────────────────────────────
+      // run_sequence: Ad hoc execution of inline steps array
+      // Usage: { command: "run_sequence", steps: [ {...}, {...}, … ] }
+      case 'run_sequence': {
+        const { steps } = command as any;
+        if (!Array.isArray(steps)) {
+          console.warn('run_sequence expects a steps array.');
+          break;
+        }
+        await runViewerCommandsSequence(steps);
+        break;
+      }
+      // ──────────────────────────────────────────────────────────────────────────
+
+      // ──────────────────────────────────────────────────────────────────────────
+      // perform_macro: Only runs a previously defined named macro
+      // Usage: { command: "perform_macro", macroName: "V1" }
+      case 'perform_macro': {
+        const { macroName } = command as any;
+        if (typeof macroName !== 'string') {
+          console.warn('perform_macro requires a macroName string.');
+          break;
+        }
+        const namedSteps = viewerMacros[macroName];
+        if (!Array.isArray(namedSteps)) {
+          console.warn(`Viewer macro '${macroName}' not defined.`);
+          break;
+        }
+        await runViewerCommandsSequence(namedSteps);
+        break;
+      }
+      // ──────────────────────────────────────────────────────────────────────────
+
+      // ──────────────────────────────────────────────────────────────────────────
+      // define_macro for viewer: saves an array of steps under viewerMacros[macroName]
+      case 'define_macro': {
+        const { macroName, steps } = command as any;
+        if (typeof macroName !== 'string' || !Array.isArray(steps)) {
+          console.warn('define_macro requires a string macroName and an array of steps.');
+          break;
+        }
+        setViewerMacros(prev => ({ ...prev, [macroName]: steps }));
+        console.log(`Viewer macro '${macroName}' defined (${steps.length} steps).`);
+        break;
+      }
+
       case 'change_layout':
         const stageMap = {
           '1x1': '1x1',
@@ -85,6 +151,7 @@ function ViewerLayout({
             protocolId: '@ohif/mnGrid',
             stageId: stageId,
           });
+          await delay(0);
         } else {
           console.warn('Unsupported layout:', command.layout);
         }
@@ -105,6 +172,7 @@ function ViewerLayout({
           commandsManager.runCommand(rotateCommand, {
             context: 'CORNERSTONE',
           });
+          await delay(0);
         }
         break;
       }
@@ -121,6 +189,7 @@ function ViewerLayout({
           dx,
           dy,
         });
+        await delay(0);
         break;
       }
 
@@ -128,6 +197,7 @@ function ViewerLayout({
         const { cineService, viewportGridService } = servicesManager.services;
         const { activeViewportIndex } = viewportGridService.getState();
         cineService.setCine({ id: activeViewportIndex, isPlaying: true });
+        await delay(0);
         break;
       }
 
@@ -135,20 +205,24 @@ function ViewerLayout({
         const { cineService, viewportGridService } = servicesManager.services;
         const { activeViewportIndex } = viewportGridService.getState();
         cineService.setCine({ id: activeViewportIndex, isPlaying: false });
+        await delay(0);
         break;
       }
 
       case 'download_image':
         commandsManager.runCommand('downloadViewportImage');
+        await delay(0);
         break;
 
       case 'pan_view':
         const { dx = 0, dy = 0 } = command;
         commandsManager.runCommand('panViewport', { dx, dy });
+        await delay(0);
         break;
 
       case 'reset_view':
         commandsManager.runCommand('resetViewport');
+        await delay(0);
         break;
 
       default:
