@@ -149,10 +149,6 @@ function WorkList({
         alert(`삭제 요청됨: ${command.studyInstanceUid}`);
         break;
 
-      case 'set_layout':
-        alert(`레이아웃 요청: ${command.layout}`);
-        break;
-
       case 'error':
         if (command.message) {
           alert(`LLM 오류 응답: ${command.message}`);
