@@ -1,6 +1,11 @@
 import { GoogleGenAI } from '@google/genai';
 import { OpenAI } from 'openai';
+import { OPENAI_KEY, GOOGLE_KEY } from './env';
 
+
+const ai = new GoogleGenAI({
+  apiKey: GOOGLE_KEY,
+});
 
 export const openai = new OpenAI({
   apiKey: OPENAI_KEY,
