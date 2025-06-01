@@ -40,10 +40,6 @@ const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 const seriesInStudiesMap = new Map();
 
-/**
- * TODO:
- * - debounce `setFilterValues` (150ms?)
- */
 function WorkList({
   data: studies,
   dataTotal: studiesTotal,
@@ -54,7 +50,6 @@ function WorkList({
   onRefresh,
   servicesManager,
 }) {
-  // WorkList.tsx 상단(함수 컴포넌트 내부)에 useState를 import한 상태에서:
   const [llmResult, setLlmResult] = useState<string | null>(null);
   const [macros, setMacros] = useState<Record<string, any[]>>({});
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
@@ -70,6 +65,82 @@ function WorkList({
   // ────────────────────────────────────────────────────────────────────────────
   // Tiny delay helper so React can flush state / network calls can resolve
   const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+
+  /**
+ * processCrossViewSequence(allSteps):
+ *  - Splits allSteps[] into:
+ *      worklistSteps[]    (commands that belong in WorkList), and
+ *      viewerSteps[]      (commands that should run in Viewer after navigation)
+ *  - Runs worklistSteps[] here. If any step is `open_study`, that will navigate
+ *    to `/viewer/dicomweb?StudyInstanceUIDs=<UID>&pendingViewerCommands=<encoded[]>`.
+ *  - If there are viewerSteps[] after the first `open_study`, bundle them as JSON,
+ *    base64‐encode, and append as query param `pendingViewerCommands=`.
+ *  - Once that navigate happens, React will unmount WorkList and mount ViewerLayout,
+ *    where the viewerSteps will be picked up from the URL and executed.
+ */
+  const processCrossViewSequence = async (allSteps: any[]): Promise<void> => {
+    if (!Array.isArray(allSteps)) {
+      console.warn('processCrossViewSequence expects an array.');
+      return;
+    }
+
+    // 1) Identify the first viewer‐side command.
+    const viewerCmdNames = new Set([
+      'change_layout',
+      'rotate_view',
+      'zoom_view',
+      'play_cine',
+      'stop_cine',
+      'download_image',
+      'pan_view',
+      'reset_view',
+    ]);
+
+    let splitIndex = allSteps.length;
+    for (let i = 0; i < allSteps.length; i++) {
+      if (viewerCmdNames.has(allSteps[i].command)) {
+        splitIndex = i;
+        break;
+      }
+    }
+
+    // 2) WorkList steps are before splitIndex; viewer steps are from splitIndex onward.
+    const worklistSteps = allSteps.slice(0, splitIndex);
+    const viewerSteps = allSteps.slice(splitIndex);
+
+    // 3) Run worklist‐side steps, but intercept "open_study" so we only record the UID.
+    let openTargetUid: string | null = null;
+    for (const step of worklistSteps) {
+      if (step.command === 'open_study' && typeof step.studyInstanceUid === 'string') {
+        // Capture the UID without navigating immediately:
+        openTargetUid = step.studyInstanceUid;
+        await delay(0);
+      } else {
+        await handleLLMCommand(step);
+      }
+    }
+
+    // 4) If there are no viewerSteps, we’re done.
+    if (viewerSteps.length === 0) {
+      return;
+    }
+
+    // 5) We do have viewerSteps, so we must have captured openTargetUid above.
+    if (!openTargetUid) {
+      console.warn('Viewer commands exist but no open_study was run. Skipping viewerSteps.');
+      return;
+    }
+
+    // 6) Base64‐encode the viewerSteps array and navigate once.
+    const encoded = btoa(JSON.stringify(viewerSteps));
+    const query = new URLSearchParams({
+      StudyInstanceUIDs: openTargetUid,
+      pendingViewerCommands: encoded,
+    });
+    navigate(`/viewer/dicomweb?${query.toString()}`);
+  };
+
 
   /**
    * runCommandsSequence(commandsArray):
@@ -156,7 +227,7 @@ function WorkList({
           console.warn('run_sequence expects an array of steps.');
           break;
         }
-        await runCommandsSequence(steps);
+        await processCrossViewSequence(steps);
         break;
       }
       // ──────────────────────────────────────────────────────────────────────────
@@ -174,7 +245,7 @@ function WorkList({
           console.warn(`Macro '${macroName}' not defined.`);
           break;
         }
-        await runCommandsSequence(macroSteps);
+        await processCrossViewSequence(macroSteps);
         break;
       }
       // ──────────────────────────────────────────────────────────────────────────

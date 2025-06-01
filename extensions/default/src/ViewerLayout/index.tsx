@@ -49,6 +49,12 @@ function ViewerLayout({
   const [viewerMacros, setViewerMacros] = useState<Record<string, any[]>>({});
   const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
+  const [appConfig] = useAppConfig();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [llmResult, setLlmResult] = useState<string | null>(null);
+  const [hasProcessedPendingCommands, setHasProcessedPendingCommands] = useState(false);
+
   /**
    * runViewerCommandsSequence(commandsArray):
    *   - commandsArray: array of viewer‐style commands (e.g. change_layout, zoom_view, etc.)
@@ -64,13 +70,70 @@ function ViewerLayout({
       await delay(50);
     }
   };
+
+  /**
+   * If URL has pendingViewerCommands, wait until each viewport has at least one
+   * display set, then fire runViewerCommandsSequence exactly once.
+   */
+  useEffect(() => {
+    let cancelled = false;
+
+    if (hasProcessedPendingCommands) {
+      return;
+    }
+
+    const params = new URLSearchParams(location.search);
+    const encoded = params.get('pendingViewerCommands');
+    if (!encoded) {
+      return;
+    }
+
+    let viewerSteps: any[];
+    try {
+      viewerSteps = JSON.parse(atob(encoded));
+      if (!Array.isArray(viewerSteps) || viewerSteps.length === 0) {
+        // If it’s invalid or empty, just remove the param and bail
+        params.delete('pendingViewerCommands');
+        navigate(
+          { pathname: location.pathname, search: params.toString() },
+          { replace: true }
+        );
+        return;
+      }
+    } catch (e) {
+      console.error('Failed to parse pendingViewerCommands:', e);
+      params.delete('pendingViewerCommands');
+      navigate(
+        { pathname: location.pathname, search: params.toString() },
+        { replace: true }
+      );
+      return;
+    }
+
+    // Immediately clear the URL param, then wait 2 seconds, then run the commands:
+    params.delete('pendingViewerCommands');
+    navigate(
+      { pathname: location.pathname, search: params.toString() },
+      { replace: true }
+    );
+
+    const timer = setTimeout(async () => {
+      if (cancelled) {
+        return;
+      }
+      await runViewerCommandsSequence(viewerSteps);
+      if (!cancelled) {
+        setHasProcessedPendingCommands(true);
+      }
+    }, 2000);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [location.search, hasProcessedPendingCommands, navigate]);
+
   // ────────────────────────────────────────────────────────────────────────────
-
-
-  const [appConfig] = useAppConfig();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [llmResult, setLlmResult] = useState<string | null>(null);
 
   const {
     recording,

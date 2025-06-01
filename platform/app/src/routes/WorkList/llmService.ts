@@ -47,9 +47,9 @@ export async function translateToEnglish(text: string): Promise<string> {
   return (await res.json()).choices[0].message.content;
 }
 
-const FEWSHOTS: Record<string, string> = {
-  worklist: `You are a helpful PACS assistant in a medical study list viewer. Convert user instructions into structured JSON commands. Supported commands include:
+const WORKLIST_FEWSHOTS = `You are a helpful PACS assistant in a medical study list viewer. Convert user instructions into structured JSON commands. Supported commands include:
 
+─── WorkList commands ───
 - filter: Apply filters like patientName, description, modalities, or studyDateRange.
 - go_to_page: Change the page number.
 - sort: Sort the list by a column and direction.
@@ -57,12 +57,14 @@ const FEWSHOTS: Record<string, string> = {
 - open_study: Open a specific study by StudyInstanceUID.
 - show_version: Show app version info.
 - open_upload: Open the DICOM file upload dialog.
+- define_macro: Save a named sequence of steps (worklist or viewer) under a macro.
+- perform_macro: Execute a previously defined macro.
 
 If multiple patientName/UID pairs are provided in Context, choose the one most similar to the user’s input (spelling/pronunciation).
 
 Respond ONLY in JSON format with the fields { "command": ..., other_fields... }
 
-### Examples
+### WorkList Examples
 
 Instruction: "Filter the list to only show brain MRI scans"
 Thought: Brain MRI means modality is MR, and 'brain' is likely in description.
@@ -286,12 +288,11 @@ Thought: Change to page 2, then open the top study on that page.
     }
   ]
 }
+`;
 
-`,
+const VIEWER_FEWSHOTS = `You are a helpful assistant inside a medical image viewer. Convert input into layout or interaction commands. Supported commands include:
 
-  viewer: `You are a helpful assistant inside a medical image viewer. Convert input into layout or interaction commands. Supported commands include:
-
-- change_layout: Change the layout. Supported layouts include "1x1", "2x2".
+- change_layout: Change the layout. Supported layouts include "1x1", "2x2", "2x1", "3x1".
 - rotate_view: Rotate the image. Use direction (left/right) and angle.
 - pan_view: Move the image in screen space. Use dx and dy.
 - zoom_view: Zoom in/out with direction, intensity, and optional dx/dy.
@@ -301,10 +302,10 @@ Thought: Change to page 2, then open the top study on that page.
 
 Respond ONLY in JSON format with fields like { "command": ..., other_fields... }
 
-### Examples
+### Viewer Examples
 
 Instruction: "Switch to a 2 by 2 layout"
-Thought: Set layout to 2x2.
+Thought: Set layout to 2×2.
 {
   "command": "change_layout",
   "layout": "2x2"
@@ -347,7 +348,7 @@ Thought: Trigger download without modal
 }
 
 Instruction: "Move the image up"
-Thought: Pan the image up (positive y screen direction)
+Thought: Pan the image up (negative dy in screen space)
 {
   "command": "pan_view",
   "dx": 0,
@@ -363,12 +364,12 @@ Thought: Pan right in screen space
 }
 
 Instruction: "Reset the view"
-Thought: User wants to reset zoom and pan to default view
+Thought: Reset zoom and pan to default
 {
   "command": "reset_view"
 }
 
-Instruction: "Run these together: switch to 2x2, then zoom in twice, then download"
+Instruction: "Run these together: switch to 2×2, then zoom in twice, then download"
 Thought: We want three viewer commands in one shot without saving a macro.
 {
   "command": "run_sequence",
@@ -451,8 +452,13 @@ Thought: Execute macro V2 (pan up → pan right → zoom out).
   "command": "perform_macro",
   "macroName": "V2"
 }
+`;
 
-`
+const FEWSHOTS: Record<string, string> = {
+  worklist: `${WORKLIST_FEWSHOTS}
+
+${VIEWER_FEWSHOTS}`,
+  viewer: VIEWER_FEWSHOTS,
 };
 
 // 유사도 계산 도구
