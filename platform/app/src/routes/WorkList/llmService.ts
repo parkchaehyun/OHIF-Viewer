@@ -348,11 +348,11 @@ Thought: Trigger download without modal
 }
 
 Instruction: "Move the image up"
-Thought: Pan the image up (negative dy in screen space)
+Thought: Pan the image up
 {
   "command": "pan_view",
   "dx": 0,
-  "dy": -50
+  "dy": 50
 }
 
 Instruction: "Shift view right"
