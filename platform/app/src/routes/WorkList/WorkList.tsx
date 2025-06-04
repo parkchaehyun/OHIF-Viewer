@@ -298,6 +298,14 @@ function WorkList({
         }
         break;
 
+      case 'go_to_main_page':
+        setFilterValues(defaultFilterValues);
+        if (typeof onRefresh === 'function') {
+          await delay(0);
+          await Promise.resolve(onRefresh());
+        }
+        break;
+
       case 'clear_filters':
         setFilterValues(defaultFilterValues);
         // Wait one tick if clearing also triggers onRefresh:
@@ -312,6 +320,25 @@ function WorkList({
           navigate(`/viewer/dicomweb?${query.toString()}`);
         }
         break;
+
+      case 'open_study_index': {
+        const { index } = command;
+        if (typeof index !== 'number') {
+          console.warn('open_study_index requires a numeric "index" field.');
+          break;
+        }
+
+        const idx = index - 1;
+
+        if (idx >= 0 && idx < currentPageStudies.length) {
+          const study = currentPageStudies[idx];
+          const query = new URLSearchParams({ StudyInstanceUIDs: study.studyInstanceUid });
+          navigate(`/viewer/dicomweb?${query.toString()}`);
+        } else {
+          alert(`현재 페이지에는 ${index}번째 환자가 없습니다.`);
+        }
+        break;
+      }
 
       case 'show_version':
         alert(`버전 정보: ${process.env.VERSION_NUMBER} / ${process.env.COMMIT_HASH}`);

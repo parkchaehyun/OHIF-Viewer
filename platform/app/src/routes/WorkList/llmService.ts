@@ -61,6 +61,11 @@ const WORKLIST_FEWSHOTS = `You are a helpful PACS assistant in a medical study l
 - perform_macro: Execute a previously defined macro.
 
 If multiple patientName/UID pairs are provided in Context, choose the one most similar to the user’s input (spelling/pronunciation).
+- If the user instruction includes a **filter** followed by a **numbered result** (e.g., "4th", "second"), you MUST:
+   1. First apply the filter command.
+   2. Then return: { "command": "open_study_index", "index": N }
+
+- DO NOT return open_study with studyInstanceUid in these cases. Even if RAG gives matching patients, you must ignore them.
 
 Respond ONLY in JSON format with the fields { "command": ..., other_fields... }
 
@@ -118,12 +123,96 @@ Thought: Sort column is patientName, direction is ascending
   "sortDirection": "ascending"
 }
 
+Instruction: "Sort from newest to oldest"
+Thought: User wants most recent dates first → ascending order.
+{
+  "command": "sort",
+  "sortBy": "studyDate",
+  "sortDirection": "ascending"
+}
+
+
+Instruction: "Sort from oldest to newest"
+Thought: User wants oldest dates first → descending order.
+{
+  "command": "sort",
+  "sortBy": "studyDate",
+  "sortDirection": "descending"
+}
+
+
 Instruction: "Sort the results by date descending"
 Thought: Sort by studyDate in descending order
 {
   "command": "sort",
   "sortBy": "studyDate",
   "sortDirection": "descending"
+}
+
+Instruction: "Go back to the main page"
+Thought: Reset filters and go to page 1
+{
+  "command": "go_to_main_page"
+}
+
+Instruction: "Show me the default screen"
+Thought: Clear filters and return to page 1
+{
+  "command": "go_to_main_page"
+}
+
+
+Instruction: "Open the second patient"
+Thought: This refers to index 2 of currentPageStudies.
+{
+  "command": "open_study_index",
+  "index": 2
+}
+
+{
+  "command": "run_sequence",
+  "steps": [
+    {
+      "command": "filter",
+      "studyDateRange": [null, "1999-12-31"]
+    },
+    {
+      "command": "open_study_index",
+      "index": 3
+    }
+  ]
+}
+
+Instruction: "Show me CT scans and open the 4th one"
+Thought: Filter by modality CT, then open index 4 on the resulting page.
+{
+  "command": "run_sequence",
+  "steps": [
+    {
+      "command": "filter",
+      "modalities": ["CT"]
+    },
+    {
+      "command": "open_study_index",
+      "index": 4
+    }
+  ]
+}
+
+Instruction: "Filter to CT and open the 4th result"
+Thought: MUST apply the filter first. Then open the 4th item AFTER filtering. Do NOT use UID directly.
+{
+  "command": "run_sequence",
+  "steps": [
+    {
+      "command": "filter",
+      "modalities": ["CT"]
+    },
+    {
+      "command": "open_study_index",
+      "index": 4
+    }
+  ]
 }
 
 Instruction: "Clear all filters"
@@ -169,34 +258,6 @@ Instruction: "Upload a DICOM file"
 Thought: Open the upload UI
 {
   "command": "open_upload"
-}
-
-Instruction: "open second study"
-Thought: The user wants to open the study at index 2 on the current page. I will look at the current_page list, find the study with "index": 2, and return its studyInstanceUid using the open_study command.
-{
-  "command": "open_study",
-  "studyInstanceUid": "1.2.840.113619.2.55.3.604688987.456.1598907161.467"
-}
-
-Instruction: "open third patient"
-Thought: third corresponds to index 3. I'll check the current_page array for the object with index 3, then extract and return its studyInstanceUid in the open_study command.
-{
-  "command": "open_study",
-  "studyInstanceUid": "2.16.840.1.113669.632.20.1211.10000512915"
-}
-
-Instruction: "open first ct study in this page"
-Thought: The user wants to open the first study on the visible page. I will find the entry in current_page where index is 1, and use its studyInstanceUid.
-{
-  "command": "open_study",
-  "studyInstanceUid": "1.3.12.2.1107.5.1.4.49655.30000024030112345678900000123"
-}
-
-Instruction: "10번째 영상 열어줘"
-Thought: Only 3 studies are shown in current_page. Index 10 is invalid.
-{
-  "command": "error",
-  "message": "Invalid index: no such study on the current page"
 }
 
 Instruction: "Run these together: go to page 3, then filter by patient 'Kim', then sort by date descending"
@@ -461,7 +522,6 @@ ${VIEWER_FEWSHOTS}`,
   viewer: VIEWER_FEWSHOTS,
 };
 
-// 유사도 계산 도구
 function levenshtein(a: string, b: string): number {
   const dp: number[][] = Array.from({ length: a.length + 1 },
     () => Array(b.length + 1).fill(0));
@@ -493,6 +553,9 @@ function buildRAGContextFromStudies(
   promptText: string
 ): string {
   const query = promptText.trim().toLowerCase();
+  if (/\b(first|second|third|fourth|fifth|\d+ ?(st|nd|rd|th|번째))\b/.test(query)) {
+    return '';
+  }
 
   const scored = studies.map(s => {
     const name = s.patientName?.toLowerCase() ?? '';
