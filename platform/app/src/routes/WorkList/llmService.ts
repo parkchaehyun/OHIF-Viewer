@@ -490,7 +490,7 @@ Thought: Store three viewer steps under macro "V2".
     {
       "command": "pan_view",
       "dx": 0,
-      "dy": -50
+      "dy": 50
     },
     {
       "command": "pan_view",
