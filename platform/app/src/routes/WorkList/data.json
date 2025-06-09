@@ -1,0 +1,4150 @@
+[
+  {
+    "id": 101,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "1번째 영상 열어줘",
+    "expected": {
+      "command": "open_study_index",
+      "index": 1
+    }
+  },
+  {
+    "id": 102,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "2번째 영상 열어줘",
+    "expected": {
+      "command": "open_study_index",
+      "index": 2
+    }
+  },
+  {
+    "id": 103,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "3번째 영상 열어줘",
+    "expected": {
+      "command": "open_study_index",
+      "index": 3
+    }
+  },
+  {
+    "id": 104,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "4번째 영상 열어줘",
+    "expected": {
+      "command": "open_study_index",
+      "index": 4
+    }
+  },
+  {
+    "id": 105,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "5번째 영상 열어줘",
+    "expected": {
+      "command": "open_study_index",
+      "index": 5
+    }
+  },
+  {
+    "id": 106,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "6번째 영상 열어줘",
+    "expected": {
+      "command": "open_study_index",
+      "index": 6
+    }
+  },
+  {
+    "id": 107,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "7번째 영상 열어줘",
+    "expected": {
+      "command": "open_study_index",
+      "index": 7
+    }
+  },
+  {
+    "id": 108,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "8번째 영상 열어줘",
+    "expected": {
+      "command": "open_study_index",
+      "index": 8
+    }
+  },
+  {
+    "id": 109,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "9번째 영상 열어줘",
+    "expected": {
+      "command": "open_study_index",
+      "index": 9
+    }
+  },
+  {
+    "id": 110,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "10번째 영상 열어줘",
+    "expected": {
+      "command": "open_study_index",
+      "index": 10
+    }
+  },
+  {
+    "id": 111,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "CTA Head and Neck 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "2.16.840.1.114362.1.11972228.22789312658.616067305.306.2"
+    }
+  },
+  {
+    "id": 112,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "M1 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "2.25.232704420736447710317909004159492840763"
+    }
+  },
+  {
+    "id": 113,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "Water Phantom 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.2.840.113619.2.290.3.3767434740.226.1600859119.501"
+    }
+  },
+  {
+    "id": 114,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "Horse 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "2.25.96975534054447904995905761963464388233"
+    }
+  },
+  {
+    "id": 115,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "PATIENT, FSRT 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.3.6.1.4.1.5962.99.1.2968617883.1314880426.1493322302363.3.0"
+    }
+  },
+  {
+    "id": 116,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "C3L-00088 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "2.25.141277760791347900862109212450152067508"
+    }
+  },
+  {
+    "id": 117,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "Neptune 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5"
+    }
+  },
+  {
+    "id": 118,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "LUNG1-008 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.3.6.1.4.1.32722.99.99.62087908186665265759322018723889952421"
+    }
+  },
+  {
+    "id": 119,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "LiverUS-06 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.3.6.1.4.1.14519.5.2.1.1188.2803.137585363493444318569098508293"
+    }
+  },
+  {
+    "id": 120,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "NCT00047385 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "2.25.275741864483510678566144889372061815320"
+    }
+  },
+  {
+    "id": 121,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "TCGA-02-0006 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "2.25.103659964951665749659160840573802789777"
+    }
+  },
+  {
+    "id": 122,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "SIIM, Sally 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.3.6.1.4.1.14519.5.2.1.4792.2001.105216574054253895819671475627"
+    }
+  },
+  {
+    "id": 123,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "StageII-Colorectal-CT-005 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458"
+    }
+  },
+  {
+    "id": 124,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "TCGA-QQ-A8VH 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.3.6.1.4.1.14519.5.2.1.3023.4024.215308722288168917637555384485"
+    }
+  },
+  {
+    "id": 125,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "DBT-P00001 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.2.826.0.1.3680043.8.498.11387662677066579919319049302075478647"
+    }
+  },
+  {
+    "id": 126,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "FreeSurfer SEG 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.3.12.2.1107.5.2.32.35162.30000015050317233592200000046"
+    }
+  },
+  {
+    "id": 127,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "HCC_004 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.3.6.1.4.1.14519.5.2.1.1706.8374.643249677828306008300337414785"
+    }
+  },
+  {
+    "id": 128,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "PCAMPMRI-00012 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.3.6.1.4.1.14519.5.2.1.3671.4754.298665348758363466150039312520"
+    }
+  },
+  {
+    "id": 129,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "TCGA-09-1667 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.3.6.1.4.1.14519.5.2.1.7695.4007.324475281161490036195179843543"
+    }
+  },
+  {
+    "id": 130,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "ACRIN-NSCLC-FDG-PET-042 환자 영상 열어줘",
+    "expected": {
+      "command": "open_study",
+      "studyInstanceUid": "1.3.6.1.4.1.14519.5.2.1.7009.2403.871108593056125491804754960339"
+    }
+  },
+  {
+    "id": 131,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "가장 최근 영상 열어줘",
+    "expected": {
+      "command": "run_sequence",
+      "steps": [
+        {
+          "command": "sort",
+          "sortBy": "studyDate",
+          "sortDirection": "ascending"
+        },
+        {
+          "command": "open_study",
+          "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
+        }
+      ]
+    }
+  },
+  {
+    "id": 132,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "최근 촬영된 스터디 열어줘",
+    "expected": {
+      "command": "run_sequence",
+      "steps": [
+        {
+          "command": "sort",
+          "sortBy": "studyDate",
+          "sortDirection": "ascending"
+        },
+        {
+          "command": "open_study",
+          "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
+        }
+      ]
+    }
+  },
+  {
+    "id": 133,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "최신 스터디 열어줘",
+    "expected": {
+      "command": "run_sequence",
+      "steps": [
+        {
+          "command": "sort",
+          "sortBy": "studyDate",
+          "sortDirection": "ascending"
+        },
+        {
+          "command": "open_study",
+          "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
+        }
+      ]
+    }
+  },
+  {
+    "id": 134,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "최신 이미지 보여줘",
+    "expected": {
+      "command": "run_sequence",
+      "steps": [
+        {
+          "command": "sort",
+          "sortBy": "studyDate",
+          "sortDirection": "ascending"
+        },
+        {
+          "command": "open_study",
+          "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
+        }
+      ]
+    }
+  },
+  {
+    "id": 135,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "최근 이미지 열어줘",
+    "expected": {
+      "command": "run_sequence",
+      "steps": [
+        {
+          "command": "sort",
+          "sortBy": "studyDate",
+          "sortDirection": "ascending"
+        },
+        {
+          "command": "open_study",
+          "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
+        }
+      ]
+    }
+  },
+  {
+    "id": 136,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "가장 오래된 영상 열어줘",
+    "expected": {
+      "command": "run_sequence",
+      "steps": [
+        {
+          "command": "sort",
+          "sortBy": "studyDate",
+          "sortDirection": "descending"
+        },
+        {
+          "command": "open_study",
+          "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
+        }
+      ]
+    }
+  },
+  {
+    "id": 137,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "최초 촬영된 영상 열어줘",
+    "expected": {
+      "command": "run_sequence",
+      "steps": [
+        {
+          "command": "sort",
+          "sortBy": "studyDate",
+          "sortDirection": "descending"
+        },
+        {
+          "command": "open_study",
+          "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
+        }
+      ]
+    }
+  },
+  {
+    "id": 138,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "오래된 스터디 보여줘",
+    "expected": {
+      "command": "run_sequence",
+      "steps": [
+        {
+          "command": "sort",
+          "sortBy": "studyDate",
+          "sortDirection": "descending"
+        },
+        {
+          "command": "open_study",
+          "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
+        }
+      ]
+    }
+  },
+  {
+    "id": 139,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "초기 스터디 열어줘",
+    "expected": {
+      "command": "run_sequence",
+      "steps": [
+        {
+          "command": "sort",
+          "sortBy": "studyDate",
+          "sortDirection": "descending"
+        },
+        {
+          "command": "open_study",
+          "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
+        }
+      ]
+    }
+  },
+  {
+    "id": 140,
+    "function": 1,
+    "category": "영상 열기",
+    "instruction": "제일 오래된 영상 보여줘",
+    "expected": {
+      "command": "run_sequence",
+      "steps": [
+        {
+          "command": "sort",
+          "sortBy": "studyDate",
+          "sortDirection": "descending"
+        },
+        {
+          "command": "open_study",
+          "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
+        }
+      ]
+    }
+  },
+  {
+    "id": 201,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "레이아웃을 1x1으로 변경해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "1x1"
+    }
+  },
+  {
+    "id": 202,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "한 개의 뷰로 보여줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "1x1"
+    }
+  },
+  {
+    "id": 203,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "화면을 하나만 표시해",
+    "expected": {
+      "command": "change_layout",
+      "layout": "1x1"
+    }
+  },
+  {
+    "id": 204,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "단일 창 모드로 전환",
+    "expected": {
+      "command": "change_layout",
+      "layout": "1x1"
+    }
+  },
+  {
+    "id": 205,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "뷰 하나로 바꿔줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "1x1"
+    }
+  },
+  {
+    "id": 206,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "1행 1열 레이아웃으로 설정",
+    "expected": {
+      "command": "change_layout",
+      "layout": "1x1"
+    }
+  },
+  {
+    "id": 207,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "한 화면 모드로 바꿔줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "1x1"
+    }
+  },
+  {
+    "id": 208,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "화면을 단일 뷰로 설정해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "1x1"
+    }
+  },
+  {
+    "id": 209,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "레이아웃을 2x1으로 변경해",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x1"
+    }
+  },
+  {
+    "id": 210,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "두 개의 뷰를 위아래로 보여줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x1"
+    }
+  },
+  {
+    "id": 211,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "2행 1열로 바꿔줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x1"
+    }
+  },
+  {
+    "id": 212,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "두 화면을 세로로 배치해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x1"
+    }
+  },
+  {
+    "id": 213,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "세로 분할 뷰로 전환해",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x1"
+    }
+  },
+  {
+    "id": 214,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "뷰를 위아래 두 개로 설정해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x1"
+    }
+  },
+  {
+    "id": 215,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "2 by 1 레이아웃 적용해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x1"
+    }
+  },
+  {
+    "id": 216,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "2x1 그리드로 보여줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x1"
+    }
+  },
+  {
+    "id": 217,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "레이아웃을 2x2로 변경해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x2"
+    }
+  },
+  {
+    "id": 218,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "두 행 두 열로 보여줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x2"
+    }
+  },
+  {
+    "id": 219,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "화면을 4분할로 설정해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x2"
+    }
+  },
+  {
+    "id": 220,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "4개 창 모드로 바꿔줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x2"
+    }
+  },
+  {
+    "id": 221,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "2행 2열 레이아웃 적용해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x2"
+    }
+  },
+  {
+    "id": 222,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "2 by 2 그리드로 전환해",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x2"
+    }
+  },
+  {
+    "id": 223,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "4분할 뷰로 보여줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x2"
+    }
+  },
+  {
+    "id": 224,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "2x2 격자로 설정해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x2"
+    }
+  },
+  {
+    "id": 225,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "레이아웃을 3x1으로 변경해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "3x1"
+    }
+  },
+  {
+    "id": 226,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "세 개의 뷰를 세로로 보여줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "3x1"
+    }
+  },
+  {
+    "id": 227,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "3행 1열로 설정해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "3x1"
+    }
+  },
+  {
+    "id": 228,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "뷰를 위에서 아래로 3개로 배치해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "3x1"
+    }
+  },
+  {
+    "id": 229,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "3 by 1 그리드로 전환해",
+    "expected": {
+      "command": "change_layout",
+      "layout": "3x1"
+    }
+  },
+  {
+    "id": 230,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "세로 3분할 뷰 모드로 바꿔줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "3x1"
+    }
+  },
+  {
+    "id": 231,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "전체 화면을 한번에 하나만 보여줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "1x1"
+    }
+  },
+  {
+    "id": 232,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "뷰 레이아웃을 싱글로 전환해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "1x1"
+    }
+  },
+  {
+    "id": 233,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "하나의 창으로 전체를 보여줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "1x1"
+    }
+  },
+  {
+    "id": 234,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "화면을 2x1 분할로 보여줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x1"
+    }
+  },
+  {
+    "id": 235,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "상하로 두 개 창을 표시해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x1"
+    }
+  },
+  {
+    "id": 236,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "두 창을 상단-하단 구조로 배치해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x1"
+    }
+  },
+  {
+    "id": 237,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "레이아웃을 네 칸으로 나눠줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x2"
+    }
+  },
+  {
+    "id": 238,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "이미지 4분할 모드로 바꿔줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "2x2"
+    }
+  },
+  {
+    "id": 239,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "3개의 뷰를 수직으로 정렬해줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "3x1"
+    }
+  },
+  {
+    "id": 240,
+    "function": 2,
+    "category": "레이아웃 설정",
+    "instruction": "화면을 세 줄로 쭉 보여줘",
+    "expected": {
+      "command": "change_layout",
+      "layout": "3x1"
+    }
+  },
+  {
+    "id": 301,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "뷰를 초기 상태로 돌린 뒤 이미지를 내려받도록 하는 동작을 1번 매크로로 만들어줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "1",
+      "steps": [
+        {
+          "command": "reset_view"
+        },
+        {
+          "command": "download_image"
+        }
+      ]
+    }
+  },
+  {
+    "id": 302,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "화면을 2x2로 나눈 다음 자동 재생을 시작하게 하는 동작을 2번 매크로로 추가해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "2",
+      "steps": [
+        {
+          "command": "change_layout",
+          "layout": "2x2"
+        },
+        {
+          "command": "play_cine"
+        }
+      ]
+    }
+  },
+  {
+    "id": 303,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "영상을 90도 회전한 뒤 확대하는 동작을 3번 매크로로 정의해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "3",
+      "steps": [
+        {
+          "command": "rotate_view",
+          "direction": "right",
+          "angle": 90
+        },
+        {
+          "command": "zoom_view",
+          "direction": "in",
+          "intensity": 1,
+          "dx": 0,
+          "dy": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": 304,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "두 단계 축소한 뒤 뷰를 초기화하는 동작을 4번 매크로로 설정해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "4",
+      "steps": [
+        {
+          "command": "zoom_view",
+          "direction": "out",
+          "intensity": 2,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "command": "reset_view"
+        }
+      ]
+    }
+  },
+  {
+    "id": 305,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "화면 레이아웃을 3x1으로 바꾸는 동작을 5번 매크로로 작성해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "5",
+      "steps": [
+        {
+          "command": "change_layout",
+          "layout": "3x1"
+        }
+      ]
+    }
+  },
+  {
+    "id": 306,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "영상을 270도 돌린 뒤 내려받도록 하는 동작을 6번 매크로로 생성해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "6",
+      "steps": [
+        {
+          "command": "rotate_view",
+          "direction": "right",
+          "angle": 270
+        },
+        {
+          "command": "download_image"
+        }
+      ]
+    }
+  },
+  {
+    "id": 307,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "뷰를 한 단계 확대한 뒤 오른쪽으로 이동하는 순서를 7번 매크로로 기록해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "7",
+      "steps": [
+        {
+          "command": "zoom_view",
+          "direction": "in",
+          "intensity": 1,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "command": "pan_view",
+          "dx": 1,
+          "dy": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": 308,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "뷰를 왼쪽으로 20픽셀 이동한 다음 축소하는 동작을 8번 매크로로 보관해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "8",
+      "steps": [
+        {
+          "command": "pan_view",
+          "dx": -20,
+          "dy": 0
+        },
+        {
+          "command": "zoom_view",
+          "direction": "out",
+          "intensity": 1,
+          "dx": 0,
+          "dy": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": 309,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "화면을 180도 반시계 방향으로 회전한 뒤 재생을 멈추는 동작을 9번 매크로로 기록해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "9",
+      "steps": [
+        {
+          "command": "rotate_view",
+          "direction": "left",
+          "angle": 180
+        },
+        {
+          "command": "stop_cine"
+        }
+      ]
+    }
+  },
+  {
+    "id": 310,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "화면을 4분할로 전환한 뒤 세 단계 확대하도록 하는 순서를 10번 매크로로 구성해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "10",
+      "steps": [
+        {
+          "command": "change_layout",
+          "layout": "2x2"
+        },
+        {
+          "command": "zoom_view",
+          "direction": "in",
+          "intensity": 3,
+          "dx": 0,
+          "dy": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": 311,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "뷰를 위로 10픽셀 이동한 뒤 90도 회전하는 동작을 11번 매크로로 업체해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "11",
+      "steps": [
+        {
+          "command": "pan_view",
+          "dx": 0,
+          "dy": 10
+        },
+        {
+          "command": "rotate_view",
+          "direction": "right",
+          "angle": 90
+        }
+      ]
+    }
+  },
+  {
+    "id": 312,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "뷰를 초기화한 뒤 상하 분할로 바꾸는 동작을 12번 매크로로 선별해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "12",
+      "steps": [
+        {
+          "command": "reset_view"
+        },
+        {
+          "command": "change_layout",
+          "layout": "2x1"
+        }
+      ]
+    }
+  },
+  {
+    "id": 313,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "재생을 멈춘 뒤 이미지를 내려받도록 하는 순서를 13번 매크로로 확보해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "13",
+      "steps": [
+        {
+          "command": "stop_cine"
+        },
+        {
+          "command": "download_image"
+        }
+      ]
+    }
+  },
+  {
+    "id": 314,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "두 단계 확대 후 우측 대각선으로 이동하는 동작을 14번 매크로로 편집해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "14",
+      "steps": [
+        {
+          "command": "zoom_view",
+          "direction": "in",
+          "intensity": 2,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "command": "pan_view",
+          "dx": 1,
+          "dy": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": 315,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "반시계 방향으로 90도 회전한 뒤 단일 뷰 모드로 전환하는 동작을 15번 매크로로 보존해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "15",
+      "steps": [
+        {
+          "command": "rotate_view",
+          "direction": "left",
+          "angle": 90
+        },
+        {
+          "command": "change_layout",
+          "layout": "1x1"
+        }
+      ]
+    }
+  },
+  {
+    "id": 316,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "세 단계 축소한 뒤 화면을 아래로 15픽셀 이동하는 동작을 16번 매크로로 탑재해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "16",
+      "steps": [
+        {
+          "command": "zoom_view",
+          "direction": "out",
+          "intensity": 3,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "command": "pan_view",
+          "dx": 0,
+          "dy": -15
+        }
+      ]
+    }
+  },
+  {
+    "id": 317,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "영상을 90도 돌린 뒤 뷰를 초기화하고 자동 재생을 시작하는 동작을 17번 매크로로 구현해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "17",
+      "steps": [
+        {
+          "command": "rotate_view",
+          "direction": "right",
+          "angle": 90
+        },
+        {
+          "command": "reset_view"
+        },
+        {
+          "command": "play_cine"
+        }
+      ]
+    }
+  },
+  {
+    "id": 318,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "뷰를 좌측 대각선으로 10픽셀 이동한 뒤 이미지를 내려받도록 하는 동작을 18번 매크로로 추가해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "18",
+      "steps": [
+        {
+          "command": "pan_view",
+          "dx": -10,
+          "dy": -10
+        },
+        {
+          "command": "download_image"
+        }
+      ]
+    }
+  },
+  {
+    "id": 319,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "뷰를 초기화한 뒤 270도 회전하고 다시 초기화하는 순서를 19번 매크로로 반영해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "19",
+      "steps": [
+        {
+          "command": "reset_view"
+        },
+        {
+          "command": "rotate_view",
+          "direction": "right",
+          "angle": 270
+        },
+        {
+          "command": "reset_view"
+        }
+      ]
+    }
+  },
+  {
+    "id": 320,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "화면을 2x2로 전환한 뒤 자동 재생을 멈추는 동작을 20번 매크로로 설정해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "20",
+      "steps": [
+        {
+          "command": "change_layout",
+          "layout": "2x2"
+        },
+        {
+          "command": "stop_cine"
+        }
+      ]
+    }
+  },
+  {
+    "id": 321,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "CT 모달리티로 검색해서 첫 번째 영상을 연 후 90도 회전하는 동작을 21번 매크로로 추가해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "21",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "CT"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "rotate_view",
+          "direction": "right",
+          "angle": 90
+        }
+      ]
+    }
+  },
+  {
+    "id": 322,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "2022-09-15에 촬영된 MR 스터디를 열고 두 단계 확대하는 동작을 22번 매크로로 보관해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "22",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "MR"
+          ],
+          "studyDateRange": [
+            "2022-09-15",
+            "2022-09-15"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "zoom_view",
+          "direction": "in",
+          "intensity": 2,
+          "dx": 0,
+          "dy": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": 323,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "US 모달리티만 검색해서 첫 영상을 연 뒤 2x2 레이아웃으로 전환하는 동작을 23번 매크로로 기록해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "23",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "US"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "change_layout",
+          "layout": "2x2"
+        }
+      ]
+    }
+  },
+  {
+    "id": 324,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "PT 모달리티로 필터해서 첫 번째 스터디를 연 후 자동 재생을 시작하는 동작을 24번 매크로로 보관해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "24",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "PT"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "play_cine"
+        }
+      ]
+    }
+  },
+  {
+    "id": 325,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "CT 모달리티만 보여준 뒤 첫 번째 영상을 연 다음 오른쪽으로 20픽셀 이동하는 동작을 25번 매크로로 저장해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "25",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "CT"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "pan_view",
+          "dx": 20,
+          "dy": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": 326,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "MR과 SEG 모달리티만 필터하고 첫 번째 영상 열기 뒤 한 단계 축소하고 다운로드하는 동작을 26번 매크로로 반영해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "26",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "MR",
+            "SEG"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "zoom_view",
+          "direction": "out",
+          "intensity": 1,
+          "dx": 0,
+          "dy": 0
+        },
+        {
+          "command": "download_image"
+        }
+      ]
+    }
+  },
+  {
+    "id": 327,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "2020-09-23에 촬영된 스터디를 열고 뷰를 초기화하는 동작을 27번 매크로로 추가해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "27",
+      "steps": [
+        {
+          "command": "filter",
+          "studyDateRange": [
+            "2020-09-23",
+            "2020-09-23"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "reset_view"
+        }
+      ]
+    }
+  },
+  {
+    "id": 328,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "SM 모달리티로 필터해서 첫 번째 영상을 열고 3x1 레이아웃으로 전환하는 동작을 28번 매크로로 정의해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "28",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "SM"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "change_layout",
+          "layout": "3x1"
+        }
+      ]
+    }
+  },
+  {
+    "id": 329,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "CR 모달리티만 검색해 첫 번째 스터디를 열고 세 단계 확대하는 동작을 29번 매크로로 반영해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "29",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "CR"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "zoom_view",
+          "direction": "in",
+          "intensity": 3,
+          "dx": 0,
+          "dy": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": 330,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "2017-04-11에 촬영된 스터디를 열고 재생을 멈추는 동작을 30번 매크로로 정의해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "30",
+      "steps": [
+        {
+          "command": "filter",
+          "studyDateRange": [
+            "2017-04-11",
+            "2017-04-11"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "stop_cine"
+        }
+      ]
+    }
+  },
+  {
+    "id": 331,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "MG 모달리티만 보여준 뒤 첫 번째 영상을 열고 180도 반시계 회전하는 동작을 31번 매크로로 저장해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "31",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "MG"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "rotate_view",
+          "direction": "left",
+          "angle": 180
+        }
+      ]
+    }
+  },
+  {
+    "id": 332,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "DOC 모달리티만 검색해 첫 번째 스터디를 연 후 대각선으로 10픽셀 이동하는 동작을 32번 매크로로 보관해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "32",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "DOC"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "pan_view",
+          "dx": 10,
+          "dy": 10
+        }
+      ]
+    }
+  },
+  {
+    "id": 333,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "2009-07-02 날짜 필터 후 첫 영상 열기 뒤 단일 뷰로 전환하고 다운로드하는 동작을 33번 매크로로 기록해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "33",
+      "steps": [
+        {
+          "command": "filter",
+          "studyDateRange": [
+            "2009-07-02",
+            "2009-07-02"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "change_layout",
+          "layout": "1x1"
+        },
+        {
+          "command": "download_image"
+        }
+      ]
+    }
+  },
+  {
+    "id": 334,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "RTSTRUCT 모달리티로만 필터하고 첫 번째 영상을 연 후 270도 회전하는 동작을 34번 매크로로 생성해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "34",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "RTSTRUCT"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "rotate_view",
+          "direction": "right",
+          "angle": 270
+        }
+      ]
+    }
+  },
+  {
+    "id": 335,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "2000-01-01 날짜 기준으로 필터해 첫 번째 영상을 연 뒤 두 단계 축소하는 동작을 35번 매크로로 기록해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "35",
+      "steps": [
+        {
+          "command": "filter",
+          "studyDateRange": [
+            "2000-01-01",
+            "2000-01-01"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "zoom_view",
+          "direction": "out",
+          "intensity": 2,
+          "dx": 0,
+          "dy": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": 336,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "PT와 CT 모달리티를 동시에 필터하고 첫 번째 스터디를 연 후 2x1 레이아웃으로 전환하는 동작을 36번 매크로로 설정해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "36",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "PT",
+            "CT"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "change_layout",
+          "layout": "2x1"
+        }
+      ]
+    }
+  },
+  {
+    "id": 337,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "SR 모달리티만 보여준 뒤 첫 번째 영상을 열고 재생한 후 멈추는 동작을 37번 매크로로 설정해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "37",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "SR"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "play_cine"
+        },
+        {
+          "command": "stop_cine"
+        }
+      ]
+    }
+  },
+  {
+    "id": 338,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "1995-04-03 날짜 필터 후 첫 스터디 연 뒤 왼쪽으로 20픽셀 이동하는 동작을 38번 매크로로 만들어 주세요",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "38",
+      "steps": [
+        {
+          "command": "filter",
+          "studyDateRange": [
+            "1995-04-03",
+            "1995-04-03"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "pan_view",
+          "dx": -20,
+          "dy": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": 339,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "MG 모달리티와 2008-04-12 날짜를 동시에 필터해 첫 번째 영상을 열고 한 단계 확대하는 동작을 39번 매크로로 구현해줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "39",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "MG"
+          ],
+          "studyDateRange": [
+            "2008-04-12",
+            "2008-04-12"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "zoom_view",
+          "direction": "in",
+          "intensity": 1,
+          "dx": 0,
+          "dy": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": 340,
+    "function": 3,
+    "category": "매크로 설정",
+    "instruction": "US 모달리티로 필터한 뒤 2011-03-23 날짜 스터디 열고 90도 회전하는 동작을 40번 매크로로 만들어줘",
+    "expected": {
+      "command": "define_macro",
+      "macroName": "40",
+      "steps": [
+        {
+          "command": "filter",
+          "modalities": [
+            "US"
+          ],
+          "studyDateRange": [
+            "2011-03-23",
+            "2011-03-23"
+          ]
+        },
+        {
+          "command": "open_study_index",
+          "index": 1
+        },
+        {
+          "command": "rotate_view",
+          "direction": "right",
+          "angle": 90
+        }
+      ]
+    }
+  },
+  {
+    "id": 401,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "1번 매크로를 실행해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "1"
+    }
+  },
+  {
+    "id": 402,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "매크로 번호 2를 발동시켜줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "2"
+    }
+  },
+  {
+    "id": 403,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "3번 매크로를 동작시키도록 부탁해",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "3"
+    }
+  },
+  {
+    "id": 404,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "4번 매크로 가동해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "4"
+    }
+  },
+  {
+    "id": 405,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "5번 매크로를 작동시켜줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "5"
+    }
+  },
+  {
+    "id": 406,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "6번 매크로를 시작해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "6"
+    }
+  },
+  {
+    "id": 407,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "7번 매크로를 트리거해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "7"
+    }
+  },
+  {
+    "id": 408,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "매크로 8번을 발동해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "8"
+    }
+  },
+  {
+    "id": 409,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "9번 매크로 실행 부탁해",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "9"
+    }
+  },
+  {
+    "id": 410,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "10번 매크로 가동 요청해",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "10"
+    }
+  },
+  {
+    "id": 411,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "11번 매크로를 적용해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "11"
+    }
+  },
+  {
+    "id": 412,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "12번 매크로를 수행해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "12"
+    }
+  },
+  {
+    "id": 413,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "13번 매크로를 실행해 줬으면 해",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "13"
+    }
+  },
+  {
+    "id": 414,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "14번 매크로를 활성화해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "14"
+    }
+  },
+  {
+    "id": 415,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "15번 매크로를 틀어줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "15"
+    }
+  },
+  {
+    "id": 416,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "16번 매크로를 돌려줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "16"
+    }
+  },
+  {
+    "id": 417,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "17번 매크로를 돌아가게 해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "17"
+    }
+  },
+  {
+    "id": 418,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "18번 매크로를 시동해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "18"
+    }
+  },
+  {
+    "id": 419,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "19번 매크로를 활성화시켜줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "19"
+    }
+  },
+  {
+    "id": 420,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "20번 매크로를 실행해줄래",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "20"
+    }
+  },
+  {
+    "id": 421,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "21번 매크로를 켜줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "21"
+    }
+  },
+  {
+    "id": 422,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "22번 매크로 작동시켜줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "22"
+    }
+  },
+  {
+    "id": 423,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "23번 매크로를 동작시켜줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "23"
+    }
+  },
+  {
+    "id": 424,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "24번 매크로를 구동해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "24"
+    }
+  },
+  {
+    "id": 425,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "25번 매크로를 작동해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "25"
+    }
+  },
+  {
+    "id": 426,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "26번 매크로를 시연해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "26"
+    }
+  },
+  {
+    "id": 427,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "27번 매크로를 돌려줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "27"
+    }
+  },
+  {
+    "id": 428,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "28번 매크로를 시작해줄래",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "28"
+    }
+  },
+  {
+    "id": 429,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "29번 매크로를 트리거해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "29"
+    }
+  },
+  {
+    "id": 430,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "30번 매크로를 가동해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "30"
+    }
+  },
+  {
+    "id": 431,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "31번 매크로를 활성화해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "31"
+    }
+  },
+  {
+    "id": 432,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "32번 매크로를 시행해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "32"
+    }
+  },
+  {
+    "id": 433,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "33번 매크로를 작동시켜줄래",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "33"
+    }
+  },
+  {
+    "id": 434,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "34번 매크로를 돌려줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "34"
+    }
+  },
+  {
+    "id": 435,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "35번 매크로를 실행해줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "35"
+    }
+  },
+  {
+    "id": 436,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "36번 매크로를 시동해줄래",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "36"
+    }
+  },
+  {
+    "id": 437,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "37번 매크로를 발동시켜줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "37"
+    }
+  },
+  {
+    "id": 438,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "38번 매크로를 가동시켜줘",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "38"
+    }
+  },
+  {
+    "id": 439,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "39번 매크로를 활성화해줄래",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "39"
+    }
+  },
+  {
+    "id": 440,
+    "function": 4,
+    "category": "매크로 실행",
+    "instruction": "40번 매크로를 트리거해줄래",
+    "expected": {
+      "command": "perform_macro",
+      "macroName": "40"
+    }
+  },
+  {
+    "id": 501,
+    "function": 5,
+    "category": "검색",
+    "instruction": "CTA Head and Neck 환자 영상만 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "CTA Head and Neck"
+    }
+  },
+  {
+    "id": 502,
+    "function": 5,
+    "category": "검색",
+    "instruction": "MRN이 NEW_PATIENT_ID인 스터디 검색해줘",
+    "expected": {
+      "command": "filter",
+      "mrn": "NEW_PATIENT_ID"
+    }
+  },
+  {
+    "id": 503,
+    "function": 5,
+    "category": "검색",
+    "instruction": "CT 모달리티의 스터디만 보여줘",
+    "expected": {
+      "command": "filter",
+      "modalities": [
+        "CT"
+      ]
+    }
+  },
+  {
+    "id": 504,
+    "function": 5,
+    "category": "검색",
+    "instruction": "2023-05-11 촬영된 스터디 보여줘",
+    "expected": {
+      "command": "filter",
+      "studyDateRange": [
+        "2023-05-11",
+        "2023-05-11"
+      ]
+    }
+  },
+  {
+    "id": 505,
+    "function": 5,
+    "category": "검색",
+    "instruction": "M1 환자 영상만 표시해줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "M1"
+    }
+  },
+  {
+    "id": 506,
+    "function": 5,
+    "category": "검색",
+    "instruction": "CT와 PT 모달리티 스터디 검색해줘",
+    "expected": {
+      "command": "filter",
+      "modalities": [
+        "CT",
+        "PT"
+      ]
+    }
+  },
+  {
+    "id": 507,
+    "function": 5,
+    "category": "검색",
+    "instruction": "2022-09-15 촬영된 M1 환자 영상만 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "M1",
+      "studyDateRange": [
+        "2022-09-15",
+        "2022-09-15"
+      ]
+    }
+  },
+  {
+    "id": 508,
+    "function": 5,
+    "category": "검색",
+    "instruction": "설명이 Uniformity인 스터디 검색해줘",
+    "expected": {
+      "command": "filter",
+      "description": "Uniformity"
+    }
+  },
+  {
+    "id": 509,
+    "function": 5,
+    "category": "검색",
+    "instruction": "2020-09-23에 촬영된 Water Phantom 스터디 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "Water Phantom",
+      "studyDateRange": [
+        "2020-09-23",
+        "2020-09-23"
+      ]
+    }
+  },
+  {
+    "id": 510,
+    "function": 5,
+    "category": "검색",
+    "instruction": "Horse 환자 스터디만 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "Horse"
+    }
+  },
+  {
+    "id": 511,
+    "function": 5,
+    "category": "검색",
+    "instruction": "accession이 321인 스터디 검색해줘",
+    "expected": {
+      "command": "filter",
+      "accession": "321"
+    }
+  },
+  {
+    "id": 512,
+    "function": 5,
+    "category": "검색",
+    "instruction": "PATIENT, FSRT 환자 영상만 표시",
+    "expected": {
+      "command": "filter",
+      "patientName": "PATIENT, FSRT"
+    }
+  },
+  {
+    "id": 513,
+    "function": 5,
+    "category": "검색",
+    "instruction": "2017-04-11 촬영된 PATIENT, FSRT 스터디 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "PATIENT, FSRT",
+      "studyDateRange": [
+        "2017-04-11",
+        "2017-04-11"
+      ]
+    }
+  },
+  {
+    "id": 514,
+    "function": 5,
+    "category": "검색",
+    "instruction": "C3L-00088 환자 스터디만 검색해줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "C3L-00088"
+    }
+  },
+  {
+    "id": 515,
+    "function": 5,
+    "category": "검색",
+    "instruction": "SM 모달리티의 C3L-00088 스터디 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "C3L-00088",
+      "modalities": [
+        "SM"
+      ]
+    }
+  },
+  {
+    "id": 516,
+    "function": 5,
+    "category": "검색",
+    "instruction": "Neptune 환자 영상 모두 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "Neptune"
+    }
+  },
+  {
+    "id": 517,
+    "function": 5,
+    "category": "검색",
+    "instruction": "2014-05-22 촬영된 Neptune 스터디만 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "Neptune",
+      "studyDateRange": [
+        "2014-05-22",
+        "2014-05-22"
+      ]
+    }
+  },
+  {
+    "id": 518,
+    "function": 5,
+    "category": "검색",
+    "instruction": "LUNG1-008 환자 스터디 검색",
+    "expected": {
+      "command": "filter",
+      "patientName": "LUNG1-008"
+    }
+  },
+  {
+    "id": 519,
+    "function": 5,
+    "category": "검색",
+    "instruction": "US 모달리티의 LiverUS-06 스터디 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "LiverUS-06",
+      "modalities": [
+        "US"
+      ]
+    }
+  },
+  {
+    "id": 520,
+    "function": 5,
+    "category": "검색",
+    "instruction": "2012-10-01 촬영된 LiverUS-06 영상만",
+    "expected": {
+      "command": "filter",
+      "patientName": "LiverUS-06",
+      "studyDateRange": [
+        "2012-10-01",
+        "2012-10-01"
+      ]
+    }
+  },
+  {
+    "id": 521,
+    "function": 5,
+    "category": "검색",
+    "instruction": "NCT00047385 환자 영상만 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "NCT00047385"
+    }
+  },
+  {
+    "id": 522,
+    "function": 5,
+    "category": "검색",
+    "instruction": "SM 모달리티 영상만 검색해줘",
+    "expected": {
+      "command": "filter",
+      "modalities": [
+        "SM"
+      ]
+    }
+  },
+  {
+    "id": 523,
+    "function": 5,
+    "category": "검색",
+    "instruction": "TCGA-02-0006 환자 스터디만 표시해줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "TCGA-02-0006"
+    }
+  },
+  {
+    "id": 524,
+    "function": 5,
+    "category": "검색",
+    "instruction": "설명에 Mammogram 포함된 스터디 검색",
+    "expected": {
+      "command": "filter",
+      "description": "Mammogram"
+    }
+  },
+  {
+    "id": 525,
+    "function": 5,
+    "category": "검색",
+    "instruction": "Chest CT Routine 설명 가진 스터디 보여줘",
+    "expected": {
+      "command": "filter",
+      "description": "Chest CT Routine"
+    }
+  },
+  {
+    "id": 526,
+    "function": 5,
+    "category": "검색",
+    "instruction": "2004-01-06 촬영된 StageII-Colorectal-CT-005 스터디만",
+    "expected": {
+      "command": "filter",
+      "patientName": "StageII-Colorectal-CT-005",
+      "studyDateRange": [
+        "2004-01-06",
+        "2004-01-06"
+      ]
+    }
+  },
+  {
+    "id": 527,
+    "function": 5,
+    "category": "검색",
+    "instruction": "2002-03-15 이후 MR 모달리티 스터디 검색",
+    "expected": {
+      "command": "filter",
+      "modalities": [
+        "MR"
+      ],
+      "studyDateRange": [
+        "2002-03-15",
+        null
+      ]
+    }
+  },
+  {
+    "id": 528,
+    "function": 5,
+    "category": "검색",
+    "instruction": "2000-01-01 촬영된 DBT-P00001 스터디만 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "DBT-P00001",
+      "studyDateRange": [
+        "2000-01-01",
+        "2000-01-01"
+      ]
+    }
+  },
+  {
+    "id": 529,
+    "function": 5,
+    "category": "검색",
+    "instruction": "FreeSurfer SEG 스터디 검색해줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "FreeSurfer SEG"
+    }
+  },
+  {
+    "id": 530,
+    "function": 5,
+    "category": "검색",
+    "instruction": "MR과 SEG 모달리티가 포함된 스터디 검색",
+    "expected": {
+      "command": "filter",
+      "modalities": [
+        "MR",
+        "SEG"
+      ]
+    }
+  },
+  {
+    "id": 531,
+    "function": 5,
+    "category": "검색",
+    "instruction": "LIVER/PELVIS 설명 포함된 HCC_004 스터디 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "HCC_004",
+      "description": "LIVER/PELVIS"
+    }
+  },
+  {
+    "id": 532,
+    "function": 5,
+    "category": "검색",
+    "instruction": "PCAMPMRI-00012 환자 스터디 검색",
+    "expected": {
+      "command": "filter",
+      "patientName": "PCAMPMRI-00012"
+    }
+  },
+  {
+    "id": 533,
+    "function": 5,
+    "category": "검색",
+    "instruction": "CT 및 SR 모달리티 영상만 보여줘",
+    "expected": {
+      "command": "filter",
+      "modalities": [
+        "CT",
+        "SR"
+      ]
+    }
+  },
+  {
+    "id": 534,
+    "function": 5,
+    "category": "검색",
+    "instruction": "PT와 CT 모달리티의 WB PET/CT 스터디 검색",
+    "expected": {
+      "command": "filter",
+      "modalities": [
+        "PT",
+        "CT"
+      ],
+      "description": "WB PET/CT"
+    }
+  },
+  {
+    "id": 535,
+    "function": 5,
+    "category": "검색",
+    "instruction": "1960-01-16 촬영된 PET/CT 영상만 보여줘",
+    "expected": {
+      "command": "filter",
+      "modalities": [
+        "PT",
+        "CT"
+      ],
+      "studyDateRange": [
+        "1960-01-16",
+        "1960-01-16"
+      ]
+    }
+  },
+  {
+    "id": 536,
+    "function": 5,
+    "category": "검색",
+    "instruction": "COVID-19-NY-SBU 환자 영상만 보여줘",
+    "expected": {
+      "command": "filter",
+      "patientName": "COVID-19-NY-SBU"
+    }
+  },
+  {
+    "id": 537,
+    "function": 5,
+    "category": "검색",
+    "instruction": "1900-11-30 촬영된 CT 영상 검색",
+    "expected": {
+      "command": "filter",
+      "modalities": [
+        "CT"
+      ],
+      "studyDateRange": [
+        "1900-11-30",
+        "1900-11-30"
+      ]
+    }
+  },
+  {
+    "id": 538,
+    "function": 5,
+    "category": "검색",
+    "instruction": "Cardiac US 모달리티 스터디만 보여줘",
+    "expected": {
+      "command": "filter",
+      "modalities": [
+        "US"
+      ]
+    }
+  },
+  {
+    "id": 539,
+    "function": 5,
+    "category": "검색",
+    "instruction": "multiframe MR 스터디 검색해줘",
+    "expected": {
+      "command": "filter",
+      "modalities": [
+        "MR"
+      ]
+    }
+  },
+  {
+    "id": 540,
+    "function": 5,
+    "category": "검색",
+    "instruction": "모든 필터 초기화해줘",
+    "expected": {
+      "command": "clear_filters"
+    }
+  },
+  {
+    "id": 601,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "이미지를 줌인해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 602,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "이미지를 줌아웃해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 603,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "뷰를 크게 보여줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 604,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "뷰를 작게 보여줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 605,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "화면을 2배 줌인해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 2,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 606,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "화면을 2배 줌아웃해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 2,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 607,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "2배로 크게 보여줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 2,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 608,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "2배로 작게 보여줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 2,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 609,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "이미지를 3배 확대해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 3,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 610,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "이미지를 3배 축소해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 3,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 611,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "한 칸만큼 확대해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 612,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "한 칸만큼 축소해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 613,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "한 눈금만큼 크게 보여줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 614,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "한 눈금만큼 작게 보여줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 615,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "2단계만큼 줌인해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 2,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 616,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "2단계만큼 줌아웃해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 2,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 617,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "3단계만큼 확대해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 3,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 618,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "3단계만큼 축소해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 3,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 619,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "이미지를 1단계 큰 크기로 보여줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 620,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "이미지를 1단계 작은 크기로 보여줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    }
+  },
+  {
+    "id": 621,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "이미지를 오른쪽으로 한 칸 이동하면서 줌인해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 1,
+      "dy": 0
+    }
+  },
+  {
+    "id": 622,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "이미지를 왼쪽으로 두 칸 이동하면서 줌아웃해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": -2,
+      "dy": 0
+    }
+  },
+  {
+    "id": 623,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "뷰를 오른쪽으로 한 칸 옮기며 2배 확대해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 2,
+      "dx": 1,
+      "dy": 0
+    }
+  },
+  {
+    "id": 624,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "뷰를 왼쪽으로 두 칸 옮기며 3배 축소해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 3,
+      "dx": -2,
+      "dy": 0
+    }
+  },
+  {
+    "id": 625,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "이미지를 위로 한 칸 이동하면서 줌인해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 1
+    }
+  },
+  {
+    "id": 626,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "이미지를 위로 두 칸 이동하면서 줌아웃해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 2
+    }
+  },
+  {
+    "id": 627,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "뷰를 오른쪽으로 한 칸 옮기며 크게 보여줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 1,
+      "dy": 0
+    }
+  },
+  {
+    "id": 628,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "뷰를 아래로 한 칸 옮기며 작게 보여줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": 0,
+      "dy": -1
+    }
+  },
+  {
+    "id": 629,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "화면을 오른쪽으로 두 칸 옮기면서 줌인해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 2,
+      "dy": 0
+    }
+  },
+  {
+    "id": 630,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "화면을 오른쪽으로 세 칸 옮기면서 줌아웃해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": 3,
+      "dy": 0
+    }
+  },
+  {
+    "id": 631,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "이미지를 아래로 두 칸 이동하면서 2배 확대해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 2,
+      "dx": 0,
+      "dy": -2
+    }
+  },
+  {
+    "id": 632,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "이미지를 위로 세 칸 이동하면서 3배 축소해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 3,
+      "dx": 0,
+      "dy": 3
+    }
+  },
+  {
+    "id": 633,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "우측으로 한 단위, 위쪽으로 한 단위 이동하며 확대해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 1,
+      "dy": 1
+    }
+  },
+  {
+    "id": 634,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "좌측으로 두 단위, 아래쪽으로 한 단위 이동하며 축소해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": -2,
+      "dy": -1
+    }
+  },
+  {
+    "id": 635,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "화면을 살짝 우측으로 이동하며 크게 보여줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 1,
+      "dy": 0
+    }
+  },
+  {
+    "id": 636,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "화면을 살짝 위쪽으로 이동하면서 작게 보여줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 1
+    }
+  },
+  {
+    "id": 637,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "화면을 조금 내려서 2배 확대해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 2,
+      "dx": 0,
+      "dy": -1
+    }
+  },
+  {
+    "id": 638,
+    "function": 6,
+    "category": "확대/축소",
+    "instruction": "뷰포트를 미세하게 오른쪽 아래로 이동하며 줌아웃해줘",
+    "expected": {
+      "command": "zoom_view",
+      "direction": "out",
+      "intensity": 1,
+      "dx": 1,
+      "dy": -1
+    }
+  },
+  {
+    "id": 701,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "시계 방향으로 이미지를 90도 회전해줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 90
+    }
+  },
+  {
+    "id": 702,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "오른쪽으로 90도 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 90
+    }
+  },
+  {
+    "id": 703,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "이미지를 90도 시계 방향으로 회전시켜줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 90
+    }
+  },
+  {
+    "id": 704,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "90도 우측으로 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 90
+    }
+  },
+  {
+    "id": 705,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "화면을 시계 방향 90도 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 90
+    }
+  },
+  {
+    "id": 706,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "90도 시계방향으로 뷰를 회전해줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 90
+    }
+  },
+  {
+    "id": 707,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "이미지를 오른쪽 90도로 회전시켜줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 90
+    }
+  },
+  {
+    "id": 708,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "반시계 방향으로 이미지를 90도 회전해줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 90
+    }
+  },
+  {
+    "id": 709,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "왼쪽으로 90도 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 90
+    }
+  },
+  {
+    "id": 710,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "이미지를 90도 반시계 방향으로 회전시켜줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 90
+    }
+  },
+  {
+    "id": 711,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "90도 좌측으로 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 90
+    }
+  },
+  {
+    "id": 712,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "뷰를 반시계방향 90도 회전해줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 90
+    }
+  },
+  {
+    "id": 713,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "90도 반시계방향으로 뷰를 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 90
+    }
+  },
+  {
+    "id": 714,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "이미지를 왼쪽 90도로 회전시켜줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 90
+    }
+  },
+  {
+    "id": 715,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "시계 방향으로 이미지를 180도 회전해줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 180
+    }
+  },
+  {
+    "id": 716,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "오른쪽으로 180도 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 180
+    }
+  },
+  {
+    "id": 717,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "이미지를 180도 시계 방향으로 회전시켜줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 180
+    }
+  },
+  {
+    "id": 718,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "180도 우측으로 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 180
+    }
+  },
+  {
+    "id": 719,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "화면을 시계 방향 180도 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 180
+    }
+  },
+  {
+    "id": 720,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "180도 시계방향으로 뷰를 회전해줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 180
+    }
+  },
+  {
+    "id": 721,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "이미지를 오른쪽 180도로 회전시켜줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 180
+    }
+  },
+  {
+    "id": 722,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "반시계 방향으로 이미지를 180도 회전해줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 180
+    }
+  },
+  {
+    "id": 723,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "왼쪽으로 180도 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 180
+    }
+  },
+  {
+    "id": 724,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "이미지를 180도 반시계 방향으로 회전시켜줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 180
+    }
+  },
+  {
+    "id": 725,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "180도 좌측으로 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 180
+    }
+  },
+  {
+    "id": 726,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "뷰를 반시계방향 180도 회전해줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 180
+    }
+  },
+  {
+    "id": 727,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "180도 반시계방향으로 뷰를 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 180
+    }
+  },
+  {
+    "id": 728,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "이미지를 왼쪽 180도로 회전시켜줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 180
+    }
+  },
+  {
+    "id": 729,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "시계 방향으로 이미지를 270도 회전해줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 270
+    }
+  },
+  {
+    "id": 730,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "오른쪽으로 270도 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 270
+    }
+  },
+  {
+    "id": 731,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "이미지를 270도 시계 방향으로 회전시켜줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 270
+    }
+  },
+  {
+    "id": 732,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "270도 우측으로 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 270
+    }
+  },
+  {
+    "id": 733,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "뷰를 시계방향 270도로 회전해줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 270
+    }
+  },
+  {
+    "id": 734,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "반시계 방향으로 이미지를 270도 회전해줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 270
+    }
+  },
+  {
+    "id": 735,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "왼쪽으로 270도 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 270
+    }
+  },
+  {
+    "id": 736,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "이미지를 270도 반시계 방향으로 회전시켜줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 270
+    }
+  },
+  {
+    "id": 737,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "270도 좌측으로 돌려줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 270
+    }
+  },
+  {
+    "id": 738,
+    "function": 7,
+    "category": "이미지 회전",
+    "instruction": "뷰를 반시계방향 270도로 회전해줘",
+    "expected": {
+      "command": "rotate_view",
+      "direction": "left",
+      "angle": 270
+    }
+  },
+  {
+    "id": 801,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "현재 보이는 이미지를 PNG 파일로 다운로드해줘",
+    "expected": {
+      "command": "download_image"
+    }
+  },
+  {
+    "id": 802,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰포트를 스크린샷으로 저장해줘",
+    "expected": {
+      "command": "download_image"
+    }
+  },
+  {
+    "id": 803,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "현재 화면을 이미지로 저장해줘",
+    "expected": {
+      "command": "download_image"
+    }
+  },
+  {
+    "id": 804,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "이미지를 로컬에 저장해줘",
+    "expected": {
+      "command": "download_image"
+    }
+  },
+  {
+    "id": 805,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "화면을 캡처해서 내려받아줘",
+    "expected": {
+      "command": "download_image"
+    }
+  },
+  {
+    "id": 806,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰포트 이미지를 캡처해줘",
+    "expected": {
+      "command": "download_image"
+    }
+  },
+  {
+    "id": 807,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "스냅샷을 다운로드해줘",
+    "expected": {
+      "command": "download_image"
+    }
+  },
+  {
+    "id": 808,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "적절한 해상도로 이미지 저장해줘",
+    "expected": {
+      "command": "download_image"
+    }
+  },
+  {
+    "id": 809,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "지금 화면을 파일로 내보내줘",
+    "expected": {
+      "command": "download_image"
+    }
+  },
+  {
+    "id": 810,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "사진 형태로 뷰포트를 저장해줘",
+    "expected": {
+      "command": "download_image"
+    }
+  },
+  {
+    "id": 811,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰를 오른쪽으로 50픽셀 이동시켜줘",
+    "expected": {
+      "command": "pan_view",
+      "dx": 50,
+      "dy": 0
+    }
+  },
+  {
+    "id": 812,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰를 왼쪽으로 50픽셀 이동시켜줘",
+    "expected": {
+      "command": "pan_view",
+      "dx": -50,
+      "dy": 0
+    }
+  },
+  {
+    "id": 813,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰를 위로 50픽셀 이동시켜줘",
+    "expected": {
+      "command": "pan_view",
+      "dx": 0,
+      "dy": 50
+    }
+  },
+  {
+    "id": 814,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰를 아래로 50픽셀 이동시켜줘",
+    "expected": {
+      "command": "pan_view",
+      "dx": 0,
+      "dy": -50
+    }
+  },
+  {
+    "id": 815,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰를 오른쪽으로 30픽셀, 위로 20픽셀 이동시켜줘",
+    "expected": {
+      "command": "pan_view",
+      "dx": 30,
+      "dy": 20
+    }
+  },
+  {
+    "id": 816,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰를 왼쪽으로 30픽셀, 아래로 20픽셀 이동시켜줘",
+    "expected": {
+      "command": "pan_view",
+      "dx": -30,
+      "dy": -20
+    }
+  },
+  {
+    "id": 817,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰를 오른쪽 위 대각선으로 이동시켜줘",
+    "expected": {
+      "command": "pan_view",
+      "dx": 20,
+      "dy": 20
+    }
+  },
+  {
+    "id": 818,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰를 왼쪽 아래 대각선으로 이동시켜줘",
+    "expected": {
+      "command": "pan_view",
+      "dx": -20,
+      "dy": -20
+    }
+  },
+  {
+    "id": 819,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰를 조금만 오른쪽으로 이동시켜줘",
+    "expected": {
+      "command": "pan_view",
+      "dx": 10,
+      "dy": 0
+    }
+  },
+  {
+    "id": 820,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰를 살짝 아래로 이동시켜줘",
+    "expected": {
+      "command": "pan_view",
+      "dx": 0,
+      "dy": -10
+    }
+  },
+  {
+    "id": 821,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "시리즈 재생을 시작해줘",
+    "expected": {
+      "command": "play_cine"
+    }
+  },
+  {
+    "id": 822,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "시네 모드로 실행해줘",
+    "expected": {
+      "command": "play_cine"
+    }
+  },
+  {
+    "id": 823,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "연속 재생 모드를 켜줘",
+    "expected": {
+      "command": "play_cine"
+    }
+  },
+  {
+    "id": 824,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "자동으로 이미지 넘기기 시작해줘",
+    "expected": {
+      "command": "play_cine"
+    }
+  },
+  {
+    "id": 825,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "영상 시퀀스 재생해줘",
+    "expected": {
+      "command": "play_cine"
+    }
+  },
+  {
+    "id": 826,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰포트에서 시네 모드를 시작해줘",
+    "expected": {
+      "command": "play_cine"
+    }
+  },
+  {
+    "id": 827,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "프레임 재생해줘",
+    "expected": {
+      "command": "play_cine"
+    }
+  },
+  {
+    "id": 828,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "플레이 버튼을 눌러줘",
+    "expected": {
+      "command": "play_cine"
+    }
+  },
+  {
+    "id": 829,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "이미지 슬라이드쇼 시작해줘",
+    "expected": {
+      "command": "play_cine"
+    }
+  },
+  {
+    "id": 830,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "서로 다른 이미지를 연속으로 보여줘",
+    "expected": {
+      "command": "play_cine"
+    }
+  },
+  {
+    "id": 831,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "시리즈 재생을 멈춰줘",
+    "expected": {
+      "command": "stop_cine"
+    }
+  },
+  {
+    "id": 832,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "시네 모드를 끄고 정지해줘",
+    "expected": {
+      "command": "stop_cine"
+    }
+  },
+  {
+    "id": 833,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "연속 재생 모드를 해제해줘",
+    "expected": {
+      "command": "stop_cine"
+    }
+  },
+  {
+    "id": 834,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "자동 재생을 중지해줘",
+    "expected": {
+      "command": "stop_cine"
+    }
+  },
+  {
+    "id": 835,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "영상 시퀀스 재생을 멈춰줘",
+    "expected": {
+      "command": "stop_cine"
+    }
+  },
+  {
+    "id": 836,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰포트에서 재생을 정지해줘",
+    "expected": {
+      "command": "stop_cine"
+    }
+  },
+  {
+    "id": 837,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "프레임 재생을 중단해줘",
+    "expected": {
+      "command": "stop_cine"
+    }
+  },
+  {
+    "id": 838,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "정지 버튼을 눌러줘",
+    "expected": {
+      "command": "stop_cine"
+    }
+  },
+  {
+    "id": 839,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "슬라이드쇼를 멈춰줘",
+    "expected": {
+      "command": "stop_cine"
+    }
+  },
+  {
+    "id": 840,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "이미지 넘김을 중지해줘",
+    "expected": {
+      "command": "stop_cine"
+    }
+  },
+  {
+    "id": 841,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰를 기본 상태로 돌려줘",
+    "expected": {
+      "command": "reset_view"
+    }
+  },
+  {
+    "id": 842,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "카메라 설정을 초기화해줘",
+    "expected": {
+      "command": "reset_view"
+    }
+  },
+  {
+    "id": 843,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "회전, 줌, 팬 모두 리셋해줘",
+    "expected": {
+      "command": "reset_view"
+    }
+  },
+  {
+    "id": 844,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "화면을 원래대로 복원해줘",
+    "expected": {
+      "command": "reset_view"
+    }
+  },
+  {
+    "id": 845,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰포트를 초기 상태로 재설정해줘",
+    "expected": {
+      "command": "reset_view"
+    }
+  },
+  {
+    "id": 846,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "이미지 위치와 크기를 초기화해줘",
+    "expected": {
+      "command": "reset_view"
+    }
+  },
+  {
+    "id": 847,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "설정을 모두 초기화해줘",
+    "expected": {
+      "command": "reset_view"
+    }
+  },
+  {
+    "id": 848,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "뷰 속성을 기본값으로 되돌려줘",
+    "expected": {
+      "command": "reset_view"
+    }
+  },
+  {
+    "id": 849,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "줌과 팬을 리셋해줘",
+    "expected": {
+      "command": "reset_view"
+    }
+  },
+  {
+    "id": 850,
+    "function": 8,
+    "category": "기타 이미지 조작 및 저장",
+    "instruction": "원본 뷰로 복구해줘",
+    "expected": {
+      "command": "reset_view"
+    }
+  }
+]
