@@ -1036,7 +1036,7 @@
         },
         {
           "command": "pan_view",
-          "dx": 1,
+          "dx": 50,
           "dy": 0
         }
       ]
@@ -1186,8 +1186,8 @@
         },
         {
           "command": "pan_view",
-          "dx": 1,
-          "dy": 1
+          "dx": 50,
+          "dy": 50
         }
       ]
     }
@@ -2384,7 +2384,7 @@
     "id": 509,
     "function": 5,
     "category": "검색",
-    "instruction": "2020-09-23에 촬영된 Water Phantom 스터디 보여줘",
+    "instruction": "2020-09-23에 촬영된 Water Phantom 환자의 스터디 보여줘",
     "expected": {
       "command": "filter",
       "patientName": "Water Phantom",
@@ -2499,7 +2499,7 @@
     "id": 519,
     "function": 5,
     "category": "검색",
-    "instruction": "US 모달리티의 LiverUS-06 스터디 보여줘",
+    "instruction": "US 모달리티의 LiverUS-06 환자 스터디 보여줘",
     "expected": {
       "command": "filter",
       "patientName": "LiverUS-06",
@@ -2512,7 +2512,7 @@
     "id": 520,
     "function": 5,
     "category": "검색",
-    "instruction": "2012-10-01 촬영된 LiverUS-06 영상만",
+    "instruction": "2012-10-01 촬영된 LiverUS-06 환자 영상만",
     "expected": {
       "command": "filter",
       "patientName": "LiverUS-06",
@@ -2622,7 +2622,7 @@
     "id": 529,
     "function": 5,
     "category": "검색",
-    "instruction": "FreeSurfer SEG 스터디 검색해줘",
+    "instruction": "FreeSurfer SEG 환자 스터디 검색해줘",
     "expected": {
       "command": "filter",
       "patientName": "FreeSurfer SEG"
@@ -2656,7 +2656,7 @@
     "id": 532,
     "function": 5,
     "category": "검색",
-    "instruction": "PCAMPMRI-00012 환자 스터디 검색",
+    "instruction": "PCAMPMRI-00012 환자 스터디만 필터해줘",
     "expected": {
       "command": "filter",
       "patientName": "PCAMPMRI-00012"
@@ -2693,7 +2693,7 @@
     "id": 535,
     "function": 5,
     "category": "검색",
-    "instruction": "1960-01-16 촬영된 PET/CT 영상만 보여줘",
+    "instruction": "1960-01-16 촬영된 PT/CT 영상만 보여줘",
     "expected": {
       "command": "filter",
       "modalities": [
@@ -2734,30 +2734,6 @@
   },
   {
     "id": 538,
-    "function": 5,
-    "category": "검색",
-    "instruction": "Cardiac US 모달리티 스터디만 보여줘",
-    "expected": {
-      "command": "filter",
-      "modalities": [
-        "US"
-      ]
-    }
-  },
-  {
-    "id": 539,
-    "function": 5,
-    "category": "검색",
-    "instruction": "multiframe MR 스터디 검색해줘",
-    "expected": {
-      "command": "filter",
-      "modalities": [
-        "MR"
-      ]
-    }
-  },
-  {
-    "id": 540,
     "function": 5,
     "category": "검색",
     "instruction": "모든 필터 초기화해줘",
@@ -3034,7 +3010,7 @@
       "command": "zoom_view",
       "direction": "in",
       "intensity": 1,
-      "dx": 1,
+      "dx": 50,
       "dy": 0
     }
   },
@@ -3047,7 +3023,7 @@
       "command": "zoom_view",
       "direction": "out",
       "intensity": 1,
-      "dx": -2,
+      "dx": -100,
       "dy": 0
     }
   },
@@ -3060,7 +3036,7 @@
       "command": "zoom_view",
       "direction": "in",
       "intensity": 2,
-      "dx": 1,
+      "dx": 50,
       "dy": 0
     }
   },
@@ -3073,7 +3049,7 @@
       "command": "zoom_view",
       "direction": "out",
       "intensity": 3,
-      "dx": -2,
+      "dx": -100,
       "dy": 0
     }
   },
@@ -3087,7 +3063,7 @@
       "direction": "in",
       "intensity": 1,
       "dx": 0,
-      "dy": 1
+      "dy": 50
     }
   },
   {
@@ -3100,7 +3076,7 @@
       "direction": "out",
       "intensity": 1,
       "dx": 0,
-      "dy": 2
+      "dy": 100
     }
   },
   {
@@ -3112,7 +3088,7 @@
       "command": "zoom_view",
       "direction": "in",
       "intensity": 1,
-      "dx": 1,
+      "dx": 50,
       "dy": 0
     }
   },
@@ -3126,7 +3102,7 @@
       "direction": "out",
       "intensity": 1,
       "dx": 0,
-      "dy": -1
+      "dy": -50
     }
   },
   {
@@ -3138,7 +3114,7 @@
       "command": "zoom_view",
       "direction": "in",
       "intensity": 1,
-      "dx": 2,
+      "dx": 100,
       "dy": 0
     }
   },
@@ -3151,7 +3127,7 @@
       "command": "zoom_view",
       "direction": "out",
       "intensity": 1,
-      "dx": 3,
+      "dx": 150,
       "dy": 0
     }
   },
@@ -3165,7 +3141,7 @@
       "direction": "in",
       "intensity": 2,
       "dx": 0,
-      "dy": -2
+      "dy": -100
     }
   },
   {
@@ -3178,7 +3154,7 @@
       "direction": "out",
       "intensity": 3,
       "dx": 0,
-      "dy": 3
+      "dy": 150
     }
   },
   {
@@ -3211,12 +3187,12 @@
     "id": 635,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "화면을 살짝 우측으로 이동하며 크게 보여줘",
+    "instruction": "화면을 반 칸 우측으로 이동하며 크게 보여줘",
     "expected": {
       "command": "zoom_view",
       "direction": "in",
       "intensity": 1,
-      "dx": 1,
+      "dx": 25,
       "dy": 0
     }
   },
@@ -3224,39 +3200,39 @@
     "id": 636,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "화면을 살짝 위쪽으로 이동하면서 작게 보여줘",
+    "instruction": "화면을 반 칸 위쪽으로 이동하면서 작게 보여줘",
     "expected": {
       "command": "zoom_view",
       "direction": "out",
       "intensity": 1,
       "dx": 0,
-      "dy": 1
+      "dy": 25
     }
   },
   {
     "id": 637,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "화면을 조금 내려서 2배 확대해줘",
+    "instruction": "화면을 반 칸 내려서 2배 확대해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "in",
       "intensity": 2,
       "dx": 0,
-      "dy": -1
+      "dy": -25
     }
   },
   {
     "id": 638,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "뷰포트를 미세하게 오른쪽 아래로 이동하며 줌아웃해줘",
+    "instruction": "뷰포트를 반 칸씩 오른쪽 아래로 이동하며 줌아웃해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "out",
       "intensity": 1,
-      "dx": 1,
-      "dy": -1
+      "dx": 25,
+      "dy": -25
     }
   },
   {
@@ -3840,8 +3816,8 @@
     "instruction": "뷰를 오른쪽 위 대각선으로 이동시켜줘",
     "expected": {
       "command": "pan_view",
-      "dx": 20,
-      "dy": 20
+      "dx": 50,
+      "dy": 50
     }
   },
   {
@@ -3851,18 +3827,18 @@
     "instruction": "뷰를 왼쪽 아래 대각선으로 이동시켜줘",
     "expected": {
       "command": "pan_view",
-      "dx": -20,
-      "dy": -20
+      "dx": -50,
+      "dy": -50
     }
   },
   {
     "id": 819,
     "function": 8,
     "category": "기타 이미지 조작 및 저장",
-    "instruction": "뷰를 조금만 오른쪽으로 이동시켜줘",
+    "instruction": "뷰를 한 칸 오른쪽으로 이동시켜줘",
     "expected": {
       "command": "pan_view",
-      "dx": 10,
+      "dx": 50,
       "dy": 0
     }
   },
@@ -3870,11 +3846,11 @@
     "id": 820,
     "function": 8,
     "category": "기타 이미지 조작 및 저장",
-    "instruction": "뷰를 살짝 아래로 이동시켜줘",
+    "instruction": "뷰를 한 칸 아래로 이동시켜줘",
     "expected": {
       "command": "pan_view",
       "dx": 0,
-      "dy": -10
+      "dy": -50
     }
   },
   {

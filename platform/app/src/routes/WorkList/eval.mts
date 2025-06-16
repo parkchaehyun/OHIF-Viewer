@@ -4,7 +4,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import deepEqual from 'fast-deep-equal';
 
-// llmService 모듈 로드
 const llmModule = await import('./llmService.ts');
 const sendPromptToLLM =
   typeof llmModule.sendPromptToLLM === 'function' ? llmModule.sendPromptToLLM :
@@ -18,7 +17,12 @@ if (typeof sendPromptToLLM !== 'function') {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// result 폴더 및 summary 폴더 경로
+// CLI args parsing
+const args = process.argv.slice(2);
+const includeIdx = args.indexOf('--include');
+const includedFunctions = includeIdx !== -1 ? args.slice(includeIdx + 1).map(Number) : null;
+
+// 경로
 const resultDir = path.join(__dirname, 'result');
 const summaryDir = path.join(resultDir, 'summary');
 
@@ -41,6 +45,12 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function evaluateLLM(filePath: string) {
   const data: EvalItem[] = JSON.parse(await fs.readFile(filePath, 'utf-8'));
+
+  // 함수 번호 필터링 적용
+  const filteredData = includedFunctions
+    ? data.filter(d => includedFunctions.includes(d.function))
+    : data;
+
   const stats: Stats = {};
   const logs: string[] = [];
   const results: ResultItem[] = [];
@@ -51,18 +61,16 @@ async function evaluateLLM(filePath: string) {
   const resultsPath = path.join(resultDir, 'results.json');
   const logPath = path.join(resultDir, 'log.txt');
 
-  // 초기화: 이전 결과 파일 삭제 및 새로 시작
   await fs.writeFile(resultsPath, '[\n');
   await fs.writeFile(logPath, '');
 
-  for (let i = 0; i < data.length; i++) {
-    const it = data[i];
+  for (let i = 0; i < filteredData.length; i++) {
+    const it = filteredData[i];
     const start = Date.now();
     const actual = await sendPromptToLLM(it.instruction, detectContext(it.expected), studies);
     const duration = Date.now() - start;
     const pass = deepEqual(actual, it.expected);
 
-    // stats 업데이트
     if (!stats[it.function]) {
       stats[it.function] = { name: it.category, total: 0, correct: 0, durations: [] };
     }
@@ -70,32 +78,25 @@ async function evaluateLLM(filePath: string) {
     if (pass) stats[it.function].correct++;
     stats[it.function].durations.push(duration);
 
-    // 로그 라인
-    const logLines: string[] = [];
-    logLines.push(`${pass ? '✅' : '❌'} [${it.category}] ${it.instruction} (${duration}ms)`);
+    const logLines = [`${pass ? '✅' : '❌'} [${it.category}] ${it.instruction} (${duration}ms)`];
     if (!pass) {
       logLines.push(`  Expected: ${JSON.stringify(it.expected)}`);
       logLines.push(`  Actual:   ${JSON.stringify(actual)}`);
     }
-
-    // 메모리와 디스크에 동시 저장
     logs.push(...logLines);
     await fs.appendFile(logPath, logLines.join('\n') + '\n');
 
-    // 결과 저장
     const resultItem: ResultItem = { ...it, actual, pass, duration };
     results.push(resultItem);
-    const isLast = i === data.length - 1;
+    const isLast = i === filteredData.length - 1;
     const resultLine = JSON.stringify(resultItem, null, 2) + (isLast ? '\n' : ',\n');
     await fs.appendFile(resultsPath, resultLine);
 
     await sleep(6000);
   }
 
-  // JSON 배열 닫기
   await fs.appendFile(resultsPath, ']\n');
 
-  // summary 작성
   const summary: Record<string, { name: string; total: number; correct: number; accuracy: number; avgTime: number; }> = {};
   for (const func in stats) {
     const s = stats[func];
@@ -117,7 +118,6 @@ async function evaluateLLM(filePath: string) {
 
   return results;
 }
-
 
 // 실행
 const dataPath = path.join(__dirname, 'data.json');
