@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,6 +12,10 @@ import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
 import { utils, hotkeys, ServicesManager } from '@ohif/core';
 import { useRecorder } from './useRecorder';
+
+import { usePorcupine } from '@picovoice/porcupine-react';
+import { PICO_KEY } from './env';
+import { PORCUPINE_MODEL_BASE64, HEY_PACS_KEYWORD_BASE64 } from './porcupineConfig';
 
 import {
   Icon,
@@ -55,13 +59,26 @@ function WorkList({
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
+
+  const [isVoiceDialogOpen, setIsVoiceDialogOpen] = useState(false);
+  const [voiceInput, setVoiceInput] = useState('');
+  const handleSubmitRef = useRef(null);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isSubmittingRef = useRef(false);
+
+
   const {
     recording,
-    audioBlob,
     start: startRecording,
     stop: stopRecording,
-  } = useRecorder();
+    volume,
+  } = useRecorder({ onAutoStop: () => handleSubmitRef.current?.() });
 
+  const handleCloseDialog = useCallback(() => {
+    setIsVoiceDialogOpen(false);
+  }, []);
   // ────────────────────────────────────────────────────────────────────────────
   // Tiny delay helper so React can flush state / network calls can resolve
   const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
@@ -365,71 +382,125 @@ function WorkList({
     }
   }
 
+  const {
+    keywordDetection,
+    isLoaded,
+    isListening,
+    error,
+    init,
+    start,
+    stop,
+    release,
+  } = usePorcupine();
 
-  // ~ Voice Command Dialog State
-  const [isVoiceDialogOpen, setIsVoiceDialogOpen] = useState(false);
-  const [voiceInput, setVoiceInput] = useState('');
 
-  // Voice command handlers
+
+  // 1. Initialize only once (no automatic start()):
+  useEffect(() => {
+    const initPorcupine = async () => {
+      try {
+        await init(
+          PICO_KEY,
+          [
+            { base64: HEY_PACS_KEYWORD_BASE64, label: 'hey pacs' },
+          ],
+          { base64: PORCUPINE_MODEL_BASE64 }
+        );
+      } catch (e) {
+        console.error('Porcupine init error:', e);
+      }
+    };
+
+    initPorcupine();
+    return () => {
+      release();
+    };
+  }, [PICO_KEY, init, release]);
+
+  // 2. Whenever the dialog opens/closes, start or stop listening:
+  useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
+
+    if (isVoiceDialogOpen) {
+      // stop listening while the modal is up
+      stop();
+    } else {
+      // resume wake-word detection once it’s closed
+      start();
+    }
+  }, [isLoaded, isVoiceDialogOpen, start, stop]);
+
   const handleVoiceCommandClick = () => {
     startRecording();
     setIsVoiceDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
-    setIsVoiceDialogOpen(false);
-  };
-  const start = (filterValues.pageNumber - 1) * filterValues.resultsPerPage;
-  const currentPageStudies = studies.slice(start, start + filterValues.resultsPerPage);
-  const handleSubmitVoiceInput = async () => {
-    const recordedBlob = await stopRecording();
 
-    let text = voiceInput.trim();
-    if (!text) {
-      if (!recordedBlob) {
-        alert("녹음 중 오류가 발생했습니다.");
-        return;
-      }
-      try {
-        text = await transcribeAudio(recordedBlob);
-      } catch (e) {
-        console.error("STT 실패:", e);
-        alert("음성 인식에 실패했습니다.");
-        return;
-      }
-      if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(text)) {
-        try {
-          text = await translateToEnglish(text);
-        } catch (e) {
-          console.error("번역 실패:", e);
-          alert("번역에 실패했습니다.");
+  // Keep track of the last detection so we only react once per trigger
+  const lastDetectionRef = useRef<typeof keywordDetection>(null);
+
+  useEffect(() => {
+    // Only run if we’re initialized and the dialog is closed
+    if (!isLoaded || isVoiceDialogOpen) {
+      return;
+    }
+
+    // keywordDetection will be a new object each time you actually hear the word
+    if (keywordDetection && keywordDetection !== lastDetectionRef.current) {
+      lastDetectionRef.current = keywordDetection;
+      console.log(`Wake word "${keywordDetection.label}" detected.`);
+      handleVoiceCommandClick();
+    }
+  }, [keywordDetection, isLoaded, isVoiceDialogOpen, handleVoiceCommandClick]);
+
+
+  const pageoffset = (filterValues.pageNumber - 1) * filterValues.resultsPerPage;
+  const currentPageStudies = studies.slice(pageoffset, pageoffset + filterValues.resultsPerPage);
+  const handleSubmitVoiceInput = useCallback(async () => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+
+    try {
+      const recordedBlob = await stopRecording(); // sets `recording = false` immediately
+      let text = voiceInput.trim();
+
+      if (!text) {
+        if (!recordedBlob) {
+          console.error('Recording failed to produce a blob.');
           return;
         }
+        text = await transcribeAudio(recordedBlob);
+        setVoiceInput(text);
+        if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(text)) {
+          text = await translateToEnglish(text);
+        }
       }
-    }
 
-    let result = null;
-    try {
-      result = await sendPromptToLLM(
-        text,
-        "worklist",
-        studies,
-        currentPageStudies
-      );
+      const result = await sendPromptToLLM(text, 'worklist', studies, currentPageStudies);
+
+      if (result) {
+        setLlmResult(JSON.stringify(result));
+        await handleLLMCommand(result);
+      } else {
+        setLlmResult('Failed to get a response.');
+      }
     } catch (e) {
-      console.error("LLM 요청 실패:", e);
+      console.error('Error during voice command submission:', e);
+      alert('An error occurred, please try again.');
+    } finally {
+      setVoiceInput('');
+      setIsVoiceDialogOpen(false);
+      isSubmittingRef.current = false;
     }
+  }, [stopRecording, voiceInput, studies, currentPageStudies, handleLLMCommand]);
 
-    if (result) {
-      setLlmResult(JSON.stringify(result));
-      handleLLMCommand(result);
-    } else {
-      setLlmResult("응답 실패");
-    }
 
-    setVoiceInput("");
-    handleCloseDialog();
-  };
+  useEffect(() => {
+    handleSubmitRef.current = handleSubmitVoiceInput;
+  }, [handleSubmitVoiceInput]);
+
 
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
@@ -845,7 +916,9 @@ function WorkList({
         menuOptions={menuOptions}
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
-        onVoiceCommandClick={handleVoiceCommandClick} // Pass the handler
+        onVoiceCommandClick={handleVoiceCommandClick}
+        // Add isListening prop for visual feedback on the mic icon
+        isListening={isListening || recording}
       />
       {/* 여기에 LLM 결과를 표시하는 새로운 영역을 추가 */}
       {llmResult && (
@@ -899,8 +972,12 @@ function WorkList({
           >
             <div className="p-4">
               <p className="mb-2 text-center">
-                {recording ? '🔴 녹음 중...' : '🔈 대기 중...'}
+                {recording ? '🔴 녹음 중...' : '🔈 처리 중...'}
               </p>
+              <div className="my-2 text-center text-sm text-gray-400">
+                <p>Mic Volume: {volume.toFixed(2)}</p>
+                <progress className="w-full" max="100" value={volume}></progress>
+              </div>
               <textarea
                 className="w-full p-2 border rounded text-black" // <-- add this class
                 rows={4}

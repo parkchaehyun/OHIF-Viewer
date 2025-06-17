@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 import { sendPromptToLLM, transcribeAudio, translateToEnglish } from '../../../../platform/app/src/routes/WorkList/llmService';
 import { useRecorder } from '../../../../platform/app/src/routes/WorkList/useRecorder';
+import { usePorcupine } from '@picovoice/porcupine-react';
+import { PICO_KEY } from '../../../../platform/app/src/routes/WorkList/env';
+import { PORCUPINE_MODEL_BASE64, HEY_PACS_KEYWORD_BASE64 } from '../../../../platform/app/src/routes/WorkList/porcupineConfig';
 
 import {
   SidePanel,
@@ -54,6 +57,10 @@ function ViewerLayout({
   const location = useLocation();
   const [llmResult, setLlmResult] = useState<string | null>(null);
   const [hasProcessedPendingCommands, setHasProcessedPendingCommands] = useState(false);
+
+  const handleSubmitRef = useRef<() => void>();
+  const lastDetectionRef = useRef<typeof keywordDetection>(null);
+
 
   /**
    * runViewerCommandsSequence(commandsArray):
@@ -133,23 +140,7 @@ function ViewerLayout({
     };
   }, [location.search, hasProcessedPendingCommands, navigate]);
 
-  // ────────────────────────────────────────────────────────────────────────────
 
-  const {
-    recording,
-    audioBlob,
-    start: startRecording,
-    stop: stopRecording,
-  } = useRecorder();
-
-  const handleVoiceCommandClick = () => {
-    startRecording();
-    setIsVoiceDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setIsVoiceDialogOpen(false);
-  };
 
   const handleLLMCommandForViewer = async (command: any): Promise<void> => {
     if (!command || typeof command !== 'object') return;
@@ -292,48 +283,95 @@ function ViewerLayout({
         console.warn('Unknown LLM command:', command);
     }
   };
+  // ────────────────────────────────────────────────────────────────────────────
 
-  const handleSubmitVoiceInput = async () => {
+  // ─── Recorder & Porcupine setup ─────────────────────────────────────────────
+  const {
+    recording,
+    start: startRecording,
+    stop: stopRecording,
+    volume,
+  } = useRecorder({
+    onAutoStop: () => handleSubmitRef.current?.(),
+  });
+
+  const { keywordDetection, isLoaded, init, start, stop, release } = usePorcupine();
+
+  // 1) One-time init / cleanup
+  useEffect(() => {
+    init(
+      PICO_KEY,
+      [{ base64: HEY_PACS_KEYWORD_BASE64, label: 'hey pacs' }],
+      { base64: PORCUPINE_MODEL_BASE64 }
+    ).catch(console.error);
+    return () => release();
+  }, [init, release]);
+
+  // 2) Only listen *while* modal is closed
+  useEffect(() => {
+    if (!isLoaded) return;
+    isVoiceDialogOpen ? stop() : start();
+  }, [isLoaded, isVoiceDialogOpen, start, stop]);
+
+  // 3) React once per new detection
+  useEffect(() => {
+    if (!isLoaded || isVoiceDialogOpen) return;
+    if (
+      keywordDetection &&
+      keywordDetection !== lastDetectionRef.current
+    ) {
+      lastDetectionRef.current = keywordDetection;
+      startRecording();
+      setIsVoiceDialogOpen(true);
+    }
+  }, [
+    keywordDetection,
+    isLoaded,
+    isVoiceDialogOpen,
+    startRecording,
+  ]);
+
+  // 4) Submit handler
+  const handleSubmitVoiceInput = useCallback(async () => {
+    const recordedBlob = await stopRecording(); // sets `recording = false` immediately
     let text = voiceInput.trim();
 
-    if (text) {
-
-    } else {
-      const recordedBlob = await stopRecording();
+    if (!text) {
       if (!recordedBlob) {
         alert("녹음 중 오류가 발생했습니다.");
         return;
       }
-      try {
-        text = await transcribeAudio(recordedBlob);
-      } catch (e) {
-        console.error("STT 실패:", e);
-        alert("음성 인식에 실패했습니다.");
-        return;
-      }
-    }
-
-    if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(text)) {
-      try {
+      text = await transcribeAudio(recordedBlob);
+      setVoiceInput(text);
+      if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(text)) {
         text = await translateToEnglish(text);
-      } catch (e) {
-        console.error("번역 실패:", e);
-        alert("번역에 실패했습니다.");
-        return;
       }
     }
-
-    const result = await sendPromptToLLM(text, "viewer");
-
+    const result = await sendPromptToLLM(text, 'viewer');
     if (result) {
       setLlmResult(JSON.stringify(result));
       handleLLMCommandForViewer(result);
-    } else {
-      setLlmResult("응답 실패");
     }
+    setVoiceInput('');
+    setIsVoiceDialogOpen(false);
+  }, [
+    stopRecording,
+    voiceInput,
+    handleLLMCommandForViewer,
+  ]);
 
-    setVoiceInput("");
-    handleCloseDialog();
+  // 5) Keep ref fresh
+  useEffect(() => {
+    handleSubmitRef.current = handleSubmitVoiceInput;
+  }, [handleSubmitVoiceInput]);
+
+  const handleVoiceCommandClick = () => {
+    startRecording();
+    setIsVoiceDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsVoiceDialogOpen(false);
   };
 
 
@@ -532,23 +570,27 @@ function ViewerLayout({
       )}
       {isVoiceDialogOpen && (
         <Modal
-          isOpen={isVoiceDialogOpen}
-          onClose={handleCloseDialog}
+          isOpen
+          onClose={() => setIsVoiceDialogOpen(false)}
           title="Voice Command"
           closeButton
         >
           <div className="p-4">
-            <p className="mb-2 text-center">
-              {recording ? '🔴 녹음 중...' : '🔈 대기 중...'}
+            <p className="text-center mb-2">
+              {recording ? '🔴 녹음 중…' : '🔈 처리 중…'}
             </p>
+            <div className="my-2 text-center text-sm text-gray-400">
+              <p>Mic Volume: {volume.toFixed(2)}</p>
+              <progress className="w-full" max="100" value={volume}></progress>
+            </div>
             <textarea
               className="w-full p-2 border rounded text-black"
               rows={4}
-              placeholder="Type your voice command here..."
+              placeholder={t('VoiceCommand:placeholder', 'Type your voice command here...')}
               value={voiceInput}
               onChange={(e) => setVoiceInput(e.target.value)}
             />
-            <div className="mt-4 flex justify-end">
+            <div className="flex justify-end">
               <button
                 className="px-4 py-2 bg-primary-main text-white rounded"
                 onClick={handleSubmitVoiceInput}
@@ -557,7 +599,7 @@ function ViewerLayout({
               </button>
               <button
                 className="ml-2 px-4 py-2 bg-gray-300 rounded"
-                onClick={handleCloseDialog}
+                onClick={() => setIsVoiceDialogOpen(false)}
               >
                 Cancel
               </button>
