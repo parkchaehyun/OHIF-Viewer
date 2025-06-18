@@ -70,6 +70,9 @@ Guidelines
 - Do not split filter and open into a run_sequence; just return two top-level commands in sequence.
 - If the input mentions a proper noun (like a person's name, e.g., "Kim Minji", etc.), assume it refers to the patientName field unless explicitly stated otherwise.
 - Do NOT use the "description" field unless the user clearly refers to modality type, body part, or scan purpose.
+- Always distinguish between "search" and "open" intentions:
+    - If the user says to search, find, show, or display studies or patients, always respond with a "filter" command only.
+    - If the user explicitly requests to open a study (e.g., "open the 1st one", "show me the 2nd scan"), use "open_study_index" after filtering.
 
 
 ### WorkList Examples
@@ -825,7 +828,9 @@ function buildPromptVariant(
   - For date filtering, use:
       "studyDateRange": ["YYYY-MM-DD", "YYYY-MM-DD"] with identical values for single-day
   - For define_macro, macro names may be strings or numbers, passed as "macroName": "3"
-
+  - Always distinguish between "search" and "open" intentions:
+    - If the user says to search, find, show, or display studies or patients, always respond with a "filter" command only.
+    - If the user explicitly requests to open a study (e.g., "open the 1st one", "show me the 2nd scan"), use "open_study_index" after filtering.
   ───────────── Return Format Reference ─────────────
   - change_layout:         { "command": "change_layout", "layout": "2x2" }
   - rotate_view:           { "command": "rotate_view", "direction": "right", "angle": 90 }

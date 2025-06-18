@@ -2375,30 +2375,6 @@
     }
   },
   {
-    "id": 512,
-    "function": 5,
-    "category": "검색",
-    "instruction": "PATIENT, FSRT 환자 영상만 표시",
-    "expected": {
-      "command": "filter",
-      "patientName": "PATIENT, FSRT"
-    }
-  },
-  {
-    "id": 513,
-    "function": 5,
-    "category": "검색",
-    "instruction": "2017-04-11 촬영된 PATIENT, FSRT 스터디 보여줘",
-    "expected": {
-      "command": "filter",
-      "patientName": "PATIENT, FSRT",
-      "studyDateRange": [
-        "2017-04-11",
-        "2017-04-11"
-      ]
-    }
-  },
-  {
     "id": 514,
     "function": 5,
     "category": "검색",
