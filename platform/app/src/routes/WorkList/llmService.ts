@@ -68,6 +68,8 @@ Guidelines
 - Output must be a valid **single JSON object** (no extra text, no markdown, no explanation).
 - Respond ONLY with structured JSON in the format: { "command": ..., ... } – no text, no comments.
 - Do not split filter and open into a run_sequence; just return two top-level commands in sequence.
+- If the input mentions a proper noun (like a person's name, e.g., "Kim Minji", etc.), assume it refers to the patientName field unless explicitly stated otherwise.
+- Do NOT use the "description" field unless the user clearly refers to modality type, body part, or scan purpose.
 
 
 ### WorkList Examples
@@ -393,6 +395,8 @@ Guidelines:
 - For date filtering, use "studyDateRange": ["YYYY-MM-DD", "YYYY-MM-DD"] with identical start and end.
 - Avoid fields not listed above.
 - Ensure output is a valid single JSON object — no extra text, markdown, or formatting
+- For pan_view, dx and dy follow screen coordinates: positive dx moves right, positive dy moves up. Therefore, moving "down" means dy should be negative, and "left" means dx should be negative.
+- When multiple filter conditions (e.g., modalities + studyDateRange) are mentioned, combine them into a single filter command object. Do not split them into multiple commands.
 
 Respond ONLY in JSON format with fields like { "command": ..., other_fields... }
 
@@ -687,6 +691,7 @@ function buildRAGContextFromStudies(
   promptText: string
 ): string {
   const query = promptText.trim().toLowerCase();
+
   if (/\b(first|second|third|fourth|fifth|\d+ ?(st|nd|rd|th|번째))\b/.test(query)) {
     return '';
   }
@@ -700,7 +705,7 @@ function buildRAGContextFromStudies(
 Use this study only. It matches the patientName in the user instruction exactly.
 
 [
-  { "patientName": "${exactMatch.patientName}", "studyInstanceUid": "${exactMatch.studyInstanceUid}" }
+  ${JSON.stringify(exactMatch, null, 2)}
 ]
 `;
   }
@@ -721,24 +726,16 @@ Use this study only. It matches the patientName in the user instruction exactly.
 
   if (candidates.length === 0) return '';
 
-  const listJson = candidates
-    .map(s =>
-      `  { "patientName": "${s.patientName}", "studyInstanceUid": "${s.studyInstanceUid}" }`
-    )
-    .join(',\n');
+  const listJson = JSON.stringify(candidates, null, 2);
 
   return `
 ### Context:
 No exact match found. Here are studies with similar patientNames.
 Pick the one that best matches the user’s instruction (spelling/pronunciation).
 
-[
 ${listJson}
-]
 `;
 }
-
-
 
 export async function sendPromptToLLM(
   promptText: string,

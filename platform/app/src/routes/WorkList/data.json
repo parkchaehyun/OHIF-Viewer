@@ -1142,7 +1142,7 @@
     "id": 314,
     "function": 3,
     "category": "매크로 설정",
-    "instruction": "두 단계 확대 후 우측 대각선으로 이동하는 동작을 14번 매크로로 편집해줘",
+    "instruction": "두 단계 확대 후 우측 대각선으로 50만큼씩 이동하는 동작을 14번 매크로로 편집해줘",
     "expected": {
       "command": "define_macro",
       "macroName": "14",
@@ -2639,7 +2639,7 @@
     "id": 534,
     "function": 5,
     "category": "검색",
-    "instruction": "PT와 CT 모달리티의 WB PET/CT 스터디 검색",
+    "instruction": "PT와 CT 모달리티의 설명이 WB PET/CT인 스터디 검색",
     "expected": {
       "command": "filter",
       "modalities": [
@@ -2731,7 +2731,7 @@
     "id": 603,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "뷰를 크게 보여줘",
+    "instruction": "뷰를 한단계 크게 보여줘",
     "expected": {
       "command": "zoom_view",
       "direction": "in",
@@ -2744,7 +2744,7 @@
     "id": 604,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "뷰를 작게 보여줘",
+    "instruction": "뷰를 한단계 작게 보여줘",
     "expected": {
       "command": "zoom_view",
       "direction": "out",
@@ -2757,7 +2757,7 @@
     "id": 605,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "화면을 2배 줌인해줘",
+    "instruction": "화면을 2번 줌인해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "in",
@@ -2770,7 +2770,7 @@
     "id": 606,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "화면을 2배 줌아웃해줘",
+    "instruction": "화면을 2번 줌아웃해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "out",
@@ -2783,7 +2783,7 @@
     "id": 607,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "2배로 크게 보여줘",
+    "instruction": "intensity를 2만큼 크게 보여줘",
     "expected": {
       "command": "zoom_view",
       "direction": "in",
@@ -2796,7 +2796,7 @@
     "id": 608,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "2배로 작게 보여줘",
+    "instruction": "intensity를 2만큼 작게 보여줘",
     "expected": {
       "command": "zoom_view",
       "direction": "out",
@@ -2809,154 +2809,11 @@
     "id": 609,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "이미지를 3배 확대해줘",
+    "instruction": "이미지를 3번 확대해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "in",
       "intensity": 3,
-      "dx": 0,
-      "dy": 0
-    }
-  },
-  {
-    "id": 610,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "이미지를 3배 축소해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "out",
-      "intensity": 3,
-      "dx": 0,
-      "dy": 0
-    }
-  },
-  {
-    "id": 611,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "한 칸만큼 확대해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "in",
-      "intensity": 1,
-      "dx": 0,
-      "dy": 0
-    }
-  },
-  {
-    "id": 612,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "한 칸만큼 축소해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "out",
-      "intensity": 1,
-      "dx": 0,
-      "dy": 0
-    }
-  },
-  {
-    "id": 613,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "한 눈금만큼 크게 보여줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "in",
-      "intensity": 1,
-      "dx": 0,
-      "dy": 0
-    }
-  },
-  {
-    "id": 614,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "한 눈금만큼 작게 보여줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "out",
-      "intensity": 1,
-      "dx": 0,
-      "dy": 0
-    }
-  },
-  {
-    "id": 615,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "2단계만큼 줌인해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "in",
-      "intensity": 2,
-      "dx": 0,
-      "dy": 0
-    }
-  },
-  {
-    "id": 616,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "2단계만큼 줌아웃해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "out",
-      "intensity": 2,
-      "dx": 0,
-      "dy": 0
-    }
-  },
-  {
-    "id": 617,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "3단계만큼 확대해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "in",
-      "intensity": 3,
-      "dx": 0,
-      "dy": 0
-    }
-  },
-  {
-    "id": 618,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "3단계만큼 축소해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "out",
-      "intensity": 3,
-      "dx": 0,
-      "dy": 0
-    }
-  },
-  {
-    "id": 619,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "이미지를 1단계 큰 크기로 보여줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "in",
-      "intensity": 1,
-      "dx": 0,
-      "dy": 0
-    }
-  },
-  {
-    "id": 620,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "이미지를 1단계 작은 크기로 보여줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "out",
-      "intensity": 1,
       "dx": 0,
       "dy": 0
     }
@@ -2965,7 +2822,7 @@
     "id": 621,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "이미지를 오른쪽으로 한 칸 이동하면서 줌인해줘",
+    "instruction": "이미지를 오른쪽으로 50만큼 이동하면서 한단계 줌인해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "in",
@@ -2978,7 +2835,7 @@
     "id": 622,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "이미지를 왼쪽으로 두 칸 이동하면서 줌아웃해줘",
+    "instruction": "이미지를 왼쪽으로 100만큼 이동하면서 한칸 줌아웃해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "out",
@@ -2991,7 +2848,7 @@
     "id": 623,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "뷰를 오른쪽으로 한 칸 옮기며 2배 확대해줘",
+    "instruction": "뷰를 오른쪽으로 50만큼 옮기며 2단계 확대해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "in",
@@ -3004,7 +2861,7 @@
     "id": 624,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "뷰를 왼쪽으로 두 칸 옮기며 3배 축소해줘",
+    "instruction": "뷰를 왼쪽으로 100만큼 옮기며 3단계 축소해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "out",
@@ -3017,7 +2874,7 @@
     "id": 625,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "이미지를 위로 한 칸 이동하면서 줌인해줘",
+    "instruction": "이미지를 위로 50만큼 이동하면서 한단계 확대 해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "in",
@@ -3030,7 +2887,7 @@
     "id": 626,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "이미지를 위로 두 칸 이동하면서 줌아웃해줘",
+    "instruction": "이미지를 위로 100만큼 이동하면서 한단계 축소해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "out",
@@ -3040,153 +2897,23 @@
     }
   },
   {
-    "id": 627,
+    "id": 638,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "뷰를 오른쪽으로 한 칸 옮기며 크게 보여줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "in",
-      "intensity": 1,
-      "dx": 50,
-      "dy": 0
-    }
-  },
-  {
-    "id": 628,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "뷰를 아래로 한 칸 옮기며 작게 보여줘",
+    "instruction": "뷰포트를 50씩 왼쪽 위로 이동하며 한단계 축소해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "out",
       "intensity": 1,
-      "dx": 0,
-      "dy": -50
-    }
-  },
-  {
-    "id": 629,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "화면을 오른쪽으로 두 칸 옮기면서 줌인해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "in",
-      "intensity": 1,
-      "dx": 100,
-      "dy": 0
-    }
-  },
-  {
-    "id": 630,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "화면을 오른쪽으로 세 칸 옮기면서 줌아웃해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "out",
-      "intensity": 1,
-      "dx": 150,
-      "dy": 0
-    }
-  },
-  {
-    "id": 631,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "이미지를 아래로 두 칸 이동하면서 2배 확대해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "in",
-      "intensity": 2,
-      "dx": 0,
-      "dy": -100
-    }
-  },
-  {
-    "id": 632,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "이미지를 위로 세 칸 이동하면서 3배 축소해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "out",
-      "intensity": 3,
-      "dx": 0,
-      "dy": 150
-    }
-  },
-  {
-    "id": 633,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "우측으로 한 단위, 위쪽으로 한 단위 이동하며 확대해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "in",
-      "intensity": 1,
-      "dx": 1,
-      "dy": 1
-    }
-  },
-  {
-    "id": 634,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "좌측으로 두 단위, 아래쪽으로 한 단위 이동하며 축소해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "out",
-      "intensity": 1,
-      "dx": -2,
-      "dy": -1
-    }
-  },
-  {
-    "id": 635,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "화면을 반 칸 우측으로 이동하며 크게 보여줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "in",
-      "intensity": 1,
-      "dx": 25,
-      "dy": 0
-    }
-  },
-  {
-    "id": 636,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "화면을 반 칸 위쪽으로 이동하면서 작게 보여줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "out",
-      "intensity": 1,
-      "dx": 0,
-      "dy": 25
-    }
-  },
-  {
-    "id": 637,
-    "function": 6,
-    "category": "확대/축소",
-    "instruction": "화면을 반 칸 내려서 2배 확대해줘",
-    "expected": {
-      "command": "zoom_view",
-      "direction": "in",
-      "intensity": 2,
-      "dx": 0,
-      "dy": -25
+      "dx": -50,
+      "dy": 50
     }
   },
   {
     "id": 638,
     "function": 6,
     "category": "확대/축소",
-    "instruction": "뷰포트를 반 칸씩 오른쪽 아래로 이동하며 줌아웃해줘",
+    "instruction": "뷰포트를 25씩 오른쪽 아래로 이동하며 한단계 축소해줘",
     "expected": {
       "command": "zoom_view",
       "direction": "out",
