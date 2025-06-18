@@ -148,11 +148,15 @@ function WorkList({
         continue;
       } else {
         await handleLLMCommand(step);
+        await delay(1000);
       }
     }
 
     // 4) If there are no viewerSteps, we’re done.
     if (viewerSteps.length === 0) {
+      if (openTargetUid) {
+        navigate(`/viewer/dicomweb?${new URLSearchParams({ StudyInstanceUIDs: openTargetUid })}`);
+      }
       return;
     }
 
