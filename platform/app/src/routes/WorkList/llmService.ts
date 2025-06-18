@@ -348,6 +348,20 @@ Thought:
   "macroName": "A"
 }
 
+Instruction: "Zoom in one step while moving the image upward by 50 pixels"
+Thought:
+- The user wants to zoom in and move upward at the same time.
+- This can be done using a single zoom_view command.
+- Use direction: 'in', intensity: 1, dx: 0 (no horizontal shift), dy: 50 (positive y is up).
+- Avoid separating pan and zoom — use combined zoom_view.
+{
+  "command": "zoom_view",
+  "direction": "in",
+  "intensity": 1,
+  "dx": 0,
+  "dy": 50
+}
+
 Instruction: Define a macro named B that goes to page 1, clears filters, and sorts by patientName ascending
 Thought:
 - Step 1: Navigate to page 1 → go_to_page

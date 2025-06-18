@@ -26,7 +26,6 @@ const selectedShot = shotIdx !== -1 ? args[shotIdx + 1] : 'fewshot_with_cot';
 
 // 경로
 const resultDir = path.join(__dirname, 'result');
-const summaryDir = path.join(resultDir, 'summary');
 
 // 타입 정의
 type EvalItem = { id: number; function: number; category: string; instruction: string; expected: any; };
@@ -102,7 +101,7 @@ async function evaluateLLM(filePath: string) {
   }
 
   await fs.writeFile(
-    path.join(summaryDir, 'summary.json'),
+    path.join(resultDir, 'summary.json'),
     JSON.stringify(summary, null, 2)
   );
 
