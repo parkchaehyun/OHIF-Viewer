@@ -15,7 +15,7 @@ import { useRecorder } from './useRecorder';
 
 import { usePorcupine } from '@picovoice/porcupine-react';
 import { PICO_KEY } from './env';
-import { PORCUPINE_MODEL_BASE64, HEY_PACS_KEYWORD_BASE64 } from './porcupineConfig';
+import { PORCUPINE_MODEL_BASE64, HEY_PACS_KEYWORD_BASE64 } from './porcupineconfig';
 
 import {
   Icon,
