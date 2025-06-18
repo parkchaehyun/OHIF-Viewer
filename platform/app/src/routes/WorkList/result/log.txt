@@ -1,0 +1,59 @@
+✅ [영상 열기] 1번째 영상 열어줘 (1241ms)
+✅ [영상 열기] 3번째 영상 열어줘 (1000ms)
+✅ [영상 열기] 4번째 영상 열어줘 (1018ms)
+✅ [영상 열기] 5번째 영상 열어줘 (1012ms)
+✅ [영상 열기] 6번째 영상 열어줘 (1019ms)
+✅ [영상 열기] 7번째 영상 열어줘 (1215ms)
+✅ [영상 열기] 8번째 영상 열어줘 (888ms)
+✅ [영상 열기] 9번째 영상 열어줘 (959ms)
+✅ [영상 열기] 10번째 영상 열어줘 (986ms)
+✅ [영상 열기] CTA Head and Neck 환자 영상 열어줘 (1134ms)
+❌ [영상 열기] M1 환자 영상 열어줘 (930ms)
+  Expected: {"command":"open_study","studyInstanceUid":"2.25.232704420736447710317909004159492840763"}
+  Actual:   {"command":"open_study","patientName":"M1"}
+✅ [영상 열기] Water Phantom 환자 영상 열어줘 (1384ms)
+✅ [영상 열기] PATIENT, FSRT 환자 영상 열어줘 (1211ms)
+✅ [영상 열기] C3L-00088 환자 영상 열어줘 (1218ms)
+✅ [영상 열기] LUNG1-008 환자 영상 열어줘 (1215ms)
+✅ [영상 열기] LiverUS-06 환자 영상 열어줘 (1216ms)
+✅ [영상 열기] NCT00047385 환자 영상 열어줘 (1106ms)
+✅ [영상 열기] TCGA-02-0006 환자 영상 열어줘 (1188ms)
+✅ [영상 열기] SIIM, Sally 환자 영상 열어줘 (1547ms)
+✅ [영상 열기] StageII-Colorectal-CT-005 환자 영상 열어줘 (1225ms)
+✅ [영상 열기] TCGA-QQ-A8VH 환자 영상 열어줘 (1355ms)
+✅ [영상 열기] DBT-P00001 환자 영상 열어줘 (1273ms)
+✅ [영상 열기] FreeSurfer SEG 환자 영상 열어줘 (1252ms)
+✅ [영상 열기] HCC_004 환자 영상 열어줘 (1279ms)
+✅ [영상 열기] PCAMPMRI-00012 환자 영상 열어줘 (1152ms)
+✅ [영상 열기] TCGA-09-1667 환자 영상 열어줘 (1292ms)
+✅ [영상 열기] ACRIN-NSCLC-FDG-PET-042 환자 영상 열어줘 (1398ms)
+❌ [영상 열기] 가장 최근 영상 열어줘 (1012ms)
+  Expected: {"command":"run_sequence","steps":[{"command":"sort","sortBy":"studyDate","sortDirection":"ascending"},{"command":"open_study_index","index":1}]}
+  Actual:   {"command":"sort","column":"studyDate","direction":"descending"}
+❌ [영상 열기] 최근 촬영된 스터디 열어줘 (1118ms)
+  Expected: {"command":"run_sequence","steps":[{"command":"sort","sortBy":"studyDate","sortDirection":"ascending"},{"command":"open_study_index","index":1}]}
+  Actual:   {"command":"filter","studyDateRange":"today"}
+❌ [영상 열기] 최신 스터디 열어줘 (1001ms)
+  Expected: {"command":"run_sequence","steps":[{"command":"sort","sortBy":"studyDate","sortDirection":"ascending"},{"command":"open_study_index","index":1}]}
+  Actual:   {"command":"sort","column":"studyDate","direction":"descending"}
+❌ [영상 열기] 최신 이미지 보여줘 (1109ms)
+  Expected: {"command":"run_sequence","steps":[{"command":"sort","sortBy":"studyDate","sortDirection":"ascending"},{"command":"open_study_index","index":1}]}
+  Actual:   {"command":"sort","column":"studyDate","direction":"descending"}
+❌ [영상 열기] 최근 이미지 열어줘 (1017ms)
+  Expected: {"command":"run_sequence","steps":[{"command":"sort","sortBy":"studyDate","sortDirection":"ascending"},{"command":"open_study_index","index":1}]}
+  Actual:   {"command":"sort","column":"studyDate","direction":"descending"}
+❌ [영상 열기] 가장 오래된 영상 열어줘 (1310ms)
+  Expected: {"command":"run_sequence","steps":[{"command":"sort","sortBy":"studyDate","sortDirection":"descending"},{"command":"open_study_index","index":1}]}
+  Actual:   {"command":"sort","column":"studyDate","direction":"ascending"}
+❌ [영상 열기] 최초 촬영된 영상 열어줘 (1113ms)
+  Expected: {"command":"run_sequence","steps":[{"command":"sort","sortBy":"studyDate","sortDirection":"descending"},{"command":"open_study_index","index":1}]}
+  Actual:   {"command":"sort","column":"studyDate","direction":"ascending"}
+❌ [영상 열기] 오래된 스터디 보여줘 (906ms)
+  Expected: {"command":"run_sequence","steps":[{"command":"sort","sortBy":"studyDate","sortDirection":"descending"},{"command":"open_study_index","index":1}]}
+  Actual:   {"command":"filter","studyDateRange":"old"}
+❌ [영상 열기] 초기 스터디 열어줘 (1013ms)
+  Expected: {"command":"run_sequence","steps":[{"command":"sort","sortBy":"studyDate","sortDirection":"descending"},{"command":"open_study_index","index":1}]}
+  Actual:   {"command":"open_study_index","index":1}
+❌ [영상 열기] 제일 오래된 영상 보여줘 (998ms)
+  Expected: {"command":"run_sequence","steps":[{"command":"sort","sortBy":"studyDate","sortDirection":"descending"},{"command":"open_study_index","index":1}]}
+  Actual:   {"command":"sort","column":"studyDate","direction":"ascending"}

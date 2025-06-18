@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
@@ -11,6 +11,11 @@ import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
 import { utils, hotkeys, ServicesManager } from '@ohif/core';
+import { useRecorder } from './useRecorder';
+
+import { usePorcupine } from '@picovoice/porcupine-react';
+import { PICO_KEY } from './env';
+import { PORCUPINE_MODEL_BASE64, HEY_PACS_KEYWORD_BASE64 } from './porcupineConfig';
 
 import {
   Icon,
@@ -31,16 +36,14 @@ import {
 
 import i18n from '@ohif/i18n';
 
+import { sendPromptToLLM, transcribeAudio, translateToEnglish } from './llmService'; //llm연결
+
 const { sortBySeriesDate } = utils;
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 const seriesInStudiesMap = new Map();
 
-/**
- * TODO:
- * - debounce `setFilterValues` (150ms?)
- */
 function WorkList({
   data: studies,
   dataTotal: studiesTotal,
@@ -51,9 +54,128 @@ function WorkList({
   onRefresh,
   servicesManager,
 }) {
+  const [llmResult, setLlmResult] = useState<string | null>(null);
+  const [macros, setMacros] = useState<Record<string, any[]>>({});
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
+
+  const [isVoiceDialogOpen, setIsVoiceDialogOpen] = useState(false);
+  const [voiceInput, setVoiceInput] = useState('');
+  const handleSubmitRef = useRef(null);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isSubmittingRef = useRef(false);
+
+
+  const {
+    recording,
+    start: startRecording,
+    stop: stopRecording,
+    volume,
+  } = useRecorder({ onAutoStop: () => handleSubmitRef.current?.() });
+
+  const handleCloseDialog = useCallback(() => {
+    setIsVoiceDialogOpen(false);
+  }, []);
+  // ────────────────────────────────────────────────────────────────────────────
+  // Tiny delay helper so React can flush state / network calls can resolve
+  const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+
+  /**
+ * processCrossViewSequence(allSteps):
+ *  - Splits allSteps[] into:
+ *      worklistSteps[]    (commands that belong in WorkList), and
+ *      viewerSteps[]      (commands that should run in Viewer after navigation)
+ *  - Runs worklistSteps[] here. If any step is `open_study`, that will navigate
+ *    to `/viewer/dicomweb?StudyInstanceUIDs=<UID>&pendingViewerCommands=<encoded[]>`.
+ *  - If there are viewerSteps[] after the first `open_study`, bundle them as JSON,
+ *    base64‐encode, and append as query param `pendingViewerCommands=`.
+ *  - Once that navigate happens, React will unmount WorkList and mount ViewerLayout,
+ *    where the viewerSteps will be picked up from the URL and executed.
+ */
+  const processCrossViewSequence = async (allSteps: any[]): Promise<void> => {
+    if (!Array.isArray(allSteps)) {
+      console.warn('processCrossViewSequence expects an array.');
+      return;
+    }
+
+    // 1) Identify the first viewer‐side command.
+    const viewerCmdNames = new Set([
+      'change_layout',
+      'rotate_view',
+      'zoom_view',
+      'play_cine',
+      'stop_cine',
+      'download_image',
+      'pan_view',
+      'reset_view',
+    ]);
+
+    let splitIndex = allSteps.length;
+    for (let i = 0; i < allSteps.length; i++) {
+      if (viewerCmdNames.has(allSteps[i].command)) {
+        splitIndex = i;
+        break;
+      }
+    }
+
+    // 2) WorkList steps are before splitIndex; viewer steps are from splitIndex onward.
+    const worklistSteps = allSteps.slice(0, splitIndex);
+    const viewerSteps = allSteps.slice(splitIndex);
+
+    // 3) Run worklist‐side steps, but intercept "open_study" so we only record the UID.
+    let openTargetUid: string | null = null;
+    for (const step of worklistSteps) {
+      /* ── open_study ─────────────────────────────────────────────── */
+      if (step.command === 'open_study' && typeof step.studyInstanceUid === 'string') {
+        openTargetUid = step.studyInstanceUid;       // just remember it
+        await delay(0);
+        continue;
+      }
+
+      /* ── open_study_index (NEW) ────────────────────────────────── */
+      if (step.command === 'open_study_index' && typeof step.index === 'number') {
+        const idx = step.index - 1;                  // 1-based → 0-based
+        if (idx >= 0 && idx < currentPageStudies.length) {
+          openTargetUid = currentPageStudies[idx].studyInstanceUid;
+        } else {
+          console.warn(`open_study_index ${step.index} out of range`);
+        }
+        await delay(0);
+        continue;
+      } else {
+        await handleLLMCommand(step);
+        await delay(1000);
+      }
+    }
+
+    // 4) If there are no viewerSteps, we’re done.
+    if (viewerSteps.length === 0) {
+      if (openTargetUid) {
+        navigate(`/viewer/dicomweb?${new URLSearchParams({ StudyInstanceUIDs: openTargetUid })}`);
+      }
+      return;
+    }
+
+    // 5) We do have viewerSteps, so we must have captured openTargetUid above.
+    if (!openTargetUid) {
+      console.warn('Viewer commands exist but no open_study was run. Skipping viewerSteps.');
+      return;
+    }
+
+    // 6) Base64‐encode the viewerSteps array and navigate once.
+    const encoded = btoa(JSON.stringify(viewerSteps));
+    const query = new URLSearchParams({
+      StudyInstanceUIDs: openTargetUid,
+      pendingViewerCommands: encoded,
+    });
+    navigate(`/viewer/dicomweb?${query.toString()}`);
+  };
+
+
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
@@ -65,26 +187,299 @@ function WorkList({
     ...defaultFilterValues,
     ...queryFilterValues,
   });
+  function applyLLMFilters(parsedResult) {
+    const newFilters = { ...filterValues };
 
-  // ~ Voice Command Dialog State
-  const [isVoiceDialogOpen, setIsVoiceDialogOpen] = useState(false);
-  const [voiceInput, setVoiceInput] = useState('');
+    if (parsedResult.patientName) {
+      newFilters.patientName = parsedResult.patientName;
+    }
+    if (parsedResult.description) {
+      newFilters.description = parsedResult.description;
+    }
+    if (parsedResult.modalities) {
+      newFilters.modalities = parsedResult.modalities;
+    }
+    if (parsedResult.studyDateRange) {
+      newFilters.studyDate = {
+        startDate: parsedResult.studyDateRange[0],
+        endDate: parsedResult.studyDateRange[1],
+      };
+    }
 
-  // Voice command handlers
+    setFilterValues(newFilters);
+    onRefresh();
+  }
+
+  async function handleLLMCommand(command: any): Promise<void> {
+    if (!command || typeof command !== 'object') return;
+
+    switch (command.command) {
+      // ──────────────────────────────────────────────────────────────────────────
+      // run_sequence: Ad hoc execution of inline steps array.
+      // Usage: { command: "run_sequence", steps: [ {...}, {...}, … ] }
+      case 'run_sequence': {
+        const { steps } = command as any;
+        if (!Array.isArray(steps)) {
+          console.warn('run_sequence expects an array of steps.');
+          break;
+        }
+        await processCrossViewSequence(steps);
+        break;
+      }
+      // ──────────────────────────────────────────────────────────────────────────
+
+      // ──────────────────────────────────────────────────────────────────────────
+      // perform_macro: Only accepts { macroName: string } to look up a named macro.
+      case 'perform_macro': {
+        const { macroName } = command as any;
+        if (typeof macroName !== 'string') {
+          console.warn('perform_macro requires a macroName string.');
+          break;
+        }
+        const macroSteps = macros[macroName];
+        if (!Array.isArray(macroSteps)) {
+          console.warn(`Macro '${macroName}' not defined.`);
+          break;
+        }
+        await processCrossViewSequence(macroSteps);
+        break;
+      }
+      // ──────────────────────────────────────────────────────────────────────────
+
+      // ──────────────────────────────────────────────────────────────────────────
+      // define_macro: store an array of steps under macros[macroName]
+      case 'define_macro': {
+        const { macroName, steps } = command as any;
+        if (typeof macroName !== 'string' || !Array.isArray(steps)) {
+          console.warn('define_macro requires a string macroName and an array of steps.');
+          break;
+        }
+        setMacros((prev) => ({ ...prev, [macroName]: steps }));
+        console.log(`Macro '${macroName}' defined with ${steps.length} steps.`);
+        break;
+      }
+      // ──────────────────────────────────────────────────────────────────────────
+
+      case 'filter':
+        applyLLMFilters(command);
+        // If applyLLMFilters triggers onRefresh() (network call), give React a tick:
+        if (typeof onRefresh === 'function') {
+          // onRefresh does not return a Promise, so we at least wait one micro‐tick:
+          await delay(0);
+        }
+        break;
+
+      case 'go_to_page':
+        if (typeof command.pageNumber === 'number') {
+          setFilterValues(prev => ({ ...prev, pageNumber: command.pageNumber }));
+          // If changing pageNumber calls onRefresh internally, wait one tick:
+          await delay(0);
+
+          await onRefresh();
+        }
+        break;
+
+      case 'sort':
+        if (command.sortBy && command.sortDirection) {
+          setFilterValues(prev => ({
+            ...prev,
+            sortBy: command.sortBy,
+            sortDirection: command.sortDirection,
+          }));
+          // After state change, wait one tick so React can re-render and then refresh:
+          await delay(0);
+          if (typeof onRefresh === 'function') {
+            await Promise.resolve(onRefresh());
+          }
+        }
+        break;
+
+      case 'go_to_main_page':
+        setFilterValues(defaultFilterValues);
+        if (typeof onRefresh === 'function') {
+          await delay(0);
+          await Promise.resolve(onRefresh());
+        }
+        break;
+
+      case 'clear_filters':
+        setFilterValues(defaultFilterValues);
+        // Wait one tick if clearing also triggers onRefresh:
+        if (typeof onRefresh === 'function') {
+          await delay(0);
+        }
+        break;
+
+      case 'open_study':
+        if (command.studyInstanceUid) {
+          const query = new URLSearchParams({ StudyInstanceUIDs: command.studyInstanceUid });
+          navigate(`/viewer/dicomweb?${query.toString()}`);
+        }
+        break;
+
+      case 'open_study_index': {
+        const { index } = command;
+        if (typeof index !== 'number') {
+          console.warn('open_study_index requires a numeric "index" field.');
+          break;
+        }
+
+        const idx = index - 1;
+
+        if (idx >= 0 && idx < currentPageStudies.length) {
+          const study = currentPageStudies[idx];
+          const query = new URLSearchParams({ StudyInstanceUIDs: study.studyInstanceUid });
+          navigate(`/viewer/dicomweb?${query.toString()}`);
+        } else {
+          alert(`현재 페이지에는 ${index}번째 환자가 없습니다.`);
+        }
+        break;
+      }
+
+      case 'show_version':
+        alert(`버전 정보: ${process.env.VERSION_NUMBER} / ${process.env.COMMIT_HASH}`);
+        break;
+
+      case 'open_upload':
+        if (uploadProps) {
+          show(uploadProps);
+        }
+        break;
+
+      case 'delete_exam':
+        alert(`삭제 요청됨: ${command.studyInstanceUid}`);
+        break;
+
+      case 'error':
+        if (command.message) {
+          alert(`LLM 오류 응답: ${command.message}`);
+        }
+        break;
+
+      default:
+        console.warn('알 수 없는 명령:', command);
+    }
+  }
+
+  const {
+    keywordDetection,
+    isLoaded,
+    isListening,
+    error,
+    init,
+    start,
+    stop,
+    release,
+  } = usePorcupine();
+
+
+
+  // 1. Initialize only once (no automatic start()):
+  useEffect(() => {
+    const initPorcupine = async () => {
+      try {
+        await init(
+          PICO_KEY,
+          [
+            { base64: HEY_PACS_KEYWORD_BASE64, label: 'hey pacs' },
+          ],
+          { base64: PORCUPINE_MODEL_BASE64 }
+        );
+      } catch (e) {
+        console.error('Porcupine init error:', e);
+      }
+    };
+
+    initPorcupine();
+    return () => {
+      release();
+    };
+  }, [PICO_KEY, init, release]);
+
+  // 2. Whenever the dialog opens/closes, start or stop listening:
+  useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
+
+    if (isVoiceDialogOpen) {
+      // stop listening while the modal is up
+      stop();
+    } else {
+      // resume wake-word detection once it’s closed
+      start();
+    }
+  }, [isLoaded, isVoiceDialogOpen, start, stop]);
+
   const handleVoiceCommandClick = () => {
+    startRecording();
     setIsVoiceDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
-    setIsVoiceDialogOpen(false);
-    setVoiceInput('');
-  };
 
-  const handleSubmitVoiceInput = () => {
-    console.log('Voice input submitted:', voiceInput);
-    handleCloseDialog();
-    // Add logic here to process the voice input if needed
-  };
+  // Keep track of the last detection so we only react once per trigger
+  const lastDetectionRef = useRef<typeof keywordDetection>(null);
+
+  useEffect(() => {
+    // Only run if we’re initialized and the dialog is closed
+    if (!isLoaded || isVoiceDialogOpen) {
+      return;
+    }
+
+    // keywordDetection will be a new object each time you actually hear the word
+    if (keywordDetection && keywordDetection !== lastDetectionRef.current) {
+      lastDetectionRef.current = keywordDetection;
+      console.log(`Wake word "${keywordDetection.label}" detected.`);
+      handleVoiceCommandClick();
+    }
+  }, [keywordDetection, isLoaded, isVoiceDialogOpen, handleVoiceCommandClick]);
+
+
+  const pageoffset = (filterValues.pageNumber - 1) * filterValues.resultsPerPage;
+  const currentPageStudies = studies.slice(pageoffset, pageoffset + filterValues.resultsPerPage);
+  const handleSubmitVoiceInput = useCallback(async () => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+
+    try {
+      const recordedBlob = await stopRecording(); // sets `recording = false` immediately
+      let text = voiceInput.trim();
+
+      if (!text) {
+        if (!recordedBlob) {
+          console.error('Recording failed to produce a blob.');
+          return;
+        }
+        text = await transcribeAudio(recordedBlob);
+        setVoiceInput(text);
+        if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(text)) {
+          text = await translateToEnglish(text);
+        }
+      }
+
+      const result = await sendPromptToLLM(text, 'worklist', studies, currentPageStudies);
+
+      if (result) {
+        setLlmResult(JSON.stringify(result));
+        await handleLLMCommand(result);
+      } else {
+        setLlmResult('Failed to get a response.');
+      }
+    } catch (e) {
+      console.error('Error during voice command submission:', e);
+      alert('An error occurred, please try again.');
+    } finally {
+      setVoiceInput('');
+      setIsVoiceDialogOpen(false);
+      isSubmittingRef.current = false;
+    }
+  }, [stopRecording, voiceInput, studies, currentPageStudies, handleLLMCommand]);
+
+
+  useEffect(() => {
+    handleSubmitRef.current = handleSubmitVoiceInput;
+  }, [handleSubmitVoiceInput]);
+
 
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
@@ -134,13 +529,17 @@ function WorkList({
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
   const numOfStudies = studiesTotal;
 
-  const setFilterValues = val => {
-    if (filterValues.pageNumber === val.pageNumber) {
-      val.pageNumber = 1;
+  const setFilterValues = updater => {
+    const newVal = typeof updater === 'function' ? updater(filterValues) : updater;
+
+    if (filterValues.pageNumber === newVal.pageNumber) {
+      newVal.pageNumber = 1;
     }
-    _setFilterValues(val);
+
+    _setFilterValues(newVal);
     setExpandedRows([]);
   };
+
 
   const onPageNumberChange = newPageNumber => {
     const oldPageNumber = filterValues.pageNumber;
@@ -347,13 +746,13 @@ function WorkList({
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                  return {
-                    description: s.description || '(empty)',
-                    seriesNumber: s.seriesNumber ?? '',
-                    modality: s.modality || '',
-                    instances: s.numSeriesInstances || '',
-                  };
-                })
+                return {
+                  description: s.description || '(empty)',
+                  seriesNumber: s.seriesNumber ?? '',
+                  modality: s.modality || '',
+                  instances: s.numSeriesInstances || '',
+                };
+              })
               : []
           }
         >
@@ -382,15 +781,15 @@ function WorkList({
                 key={i}
                 to={`${dataPath ? '../../' : ''}${mode.routeName}${dataPath ||
                   ''}?${query.toString()}`}
-                // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+              // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
                   variant={isValidMode ? 'contained' : 'disabled'}
                   disabled={!isValidMode}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
-                  className={classnames('font-medium	', { 'ml-2': !isFirst })}
-                  onClick={() => {}}
+                  className={classnames('font-medium   ', { 'ml-2': !isFirst })}
+                  onClick={() => { }}
                 >
                   {t(`Modes:${mode.displayName}`)}
                 </Button>
@@ -468,106 +867,122 @@ function WorkList({
   const uploadProps =
     dicomUploadComponent && dataSource.getConfig().dicomUploadEnabled
       ? {
-          title: 'Upload files',
-          closeButton: true,
-          shouldCloseOnEsc: false,
-          shouldCloseOnOverlayClick: false,
-          content: dicomUploadComponent.bind(null, {
-            dataSource,
-            onComplete: () => {
-              hide();
-              onRefresh();
-            },
-            onStarted: () => {
-              show({
-                ...uploadProps,
-                // when upload starts, hide the default close button as closing the dialogue must be handled by the upload dialogue itself
-                closeButton: false,
-              });
-            },
-          }),
-        }
+        title: 'Upload files',
+        closeButton: true,
+        shouldCloseOnEsc: false,
+        shouldCloseOnOverlayClick: false,
+        content: dicomUploadComponent.bind(null, {
+          dataSource,
+          onComplete: () => {
+            hide();
+            onRefresh();
+          },
+          onStarted: () => {
+            show({
+              ...uploadProps,
+              // when upload starts, hide the default close button as closing the dialogue must be handled by the upload dialogue itself
+              closeButton: false,
+            });
+          },
+        }),
+      }
       : undefined;
 
   return (
-      <div className="bg-black h-screen flex flex-col ">
-        <Header
-            isSticky
-            menuOptions={menuOptions}
-            isReturnEnabled={false}
-            WhiteLabeling={appConfig.whiteLabeling}
-            onVoiceCommandClick={handleVoiceCommandClick} // Pass the handler
-        />
-        <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
-          <StudyListFilter
-              numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
-              filtersMeta={filtersMeta}
-              filterValues={{ ...filterValues, ...defaultSortValues }}
-              onChange={setFilterValues}
-              clearFilters={() => setFilterValues(defaultFilterValues)}
-              isFiltering={isFiltering(filterValues, defaultFilterValues)}
-              onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
-          />
-          {hasStudies ? (
-              <div className="grow flex flex-col">
-                <StudyListTable
-                    tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
-                    numOfStudies={numOfStudies}
-                    filtersMeta={filtersMeta}
-                />
-                <div className="grow">
-                  <StudyListPagination
-                      onChangePage={onPageNumberChange}
-                      onChangePerPage={onResultsPerPageChange}
-                      currentPage={pageNumber}
-                      perPage={resultsPerPage}
-                  />
-                </div>
-              </div>
-          ) : (
-              <div className="flex flex-col items-center justify-center pt-48">
-                {appConfig.showLoadingIndicator && isLoadingData ? (
-                    <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
-                ) : (
-                    <EmptyStudies />
-                )}
-              </div>
-          )}
-          {/* Voice Command Dialog */}
-          {isVoiceDialogOpen && (
-              <Modal
-                  isOpen={isVoiceDialogOpen}
-                  onClose={handleCloseDialog}
-                  title={t('VoiceCommand:title', 'Voice Command')} // Optional: add to i18n
-                  closeButton
-              >
-                <div className="p-4">
-              <textarea
-                  className="w-full p-2 border rounded text-black" // <-- add this class
-                  rows={4}
-                  placeholder={t('VoiceCommand:placeholder', 'Type your voice command here...')}
-                  value={voiceInput}
-                  onChange={(e) => setVoiceInput(e.target.value)}
-              />
-                  <div className="mt-4 flex justify-end">
-                    <button
-                        className="px-4 py-2 bg-primary-main text-white rounded"
-                        onClick={handleSubmitVoiceInput}
-                    >
-                      {t('VoiceCommand:submit', 'Submit')}
-                    </button>
-                    <button
-                        className="ml-2 px-4 py-2 bg-gray-300 rounded"
-                        onClick={handleCloseDialog}
-                    >
-                      {t('VoiceCommand:cancel', 'Cancel')}
-                    </button>
-                  </div>
-                </div>
-              </Modal>
-          )}
+    <div className="bg-black h-screen flex flex-col ">
+      <Header
+        isSticky
+        menuOptions={menuOptions}
+        isReturnEnabled={false}
+        WhiteLabeling={appConfig.whiteLabeling}
+        onVoiceCommandClick={handleVoiceCommandClick}
+        // Add isListening prop for visual feedback on the mic icon
+        isListening={isListening || recording}
+      />
+      {/* 여기에 LLM 결과를 표시하는 새로운 영역을 추가 */}
+      {llmResult && (
+        <div className="p-4 bg-gray-800 text-white">
+          <strong>LLM 결과:</strong> {llmResult}
         </div>
+      )}
+
+      <div className="overflow-y-auto ohif-scrollbar flex flex-col grow">
+        <StudyListFilter
+          numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
+          filtersMeta={filtersMeta}
+          filterValues={{ ...filterValues, ...defaultSortValues }}
+          onChange={setFilterValues}
+          clearFilters={() => setFilterValues(defaultFilterValues)}
+          isFiltering={isFiltering(filterValues, defaultFilterValues)}
+          onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
+        />
+        {hasStudies ? (
+          <div className="grow flex flex-col">
+            <StudyListTable
+              tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
+              numOfStudies={numOfStudies}
+              filtersMeta={filtersMeta}
+            />
+            <div className="grow">
+              <StudyListPagination
+                onChangePage={onPageNumberChange}
+                onChangePerPage={onResultsPerPageChange}
+                currentPage={pageNumber}
+                perPage={resultsPerPage}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center pt-48">
+            {appConfig.showLoadingIndicator && isLoadingData ? (
+              <LoadingIndicatorProgress className={'w-full h-full bg-black'} />
+            ) : (
+              <EmptyStudies />
+            )}
+          </div>
+        )}
+        {/* Voice Command Dialog */}
+        {isVoiceDialogOpen && (
+          <Modal
+            isOpen={isVoiceDialogOpen}
+            onClose={handleCloseDialog}
+            title={t('VoiceCommand:title', 'Voice Command')} // Optional: add to i18n
+            closeButton
+          >
+            <div className="p-4">
+              <p className="mb-2 text-center">
+                {recording ? '🔴 녹음 중...' : '🔈 처리 중...'}
+              </p>
+              <div className="my-2 text-center text-sm text-gray-400">
+                <p>Mic Volume: {volume.toFixed(2)}</p>
+                <progress className="w-full" max="100" value={volume}></progress>
+              </div>
+              <textarea
+                className="w-full p-2 border rounded text-black" // <-- add this class
+                rows={4}
+                placeholder={t('VoiceCommand:placeholder', 'Type your voice command here...')}
+                value={voiceInput}
+                onChange={(e) => setVoiceInput(e.target.value)}
+              />
+              <div className="mt-4 flex justify-end">
+                <button
+                  className="px-4 py-2 bg-primary-main text-white rounded"
+                  onClick={handleSubmitVoiceInput}
+                >
+                  {t('VoiceCommand:submit', 'Submit')}
+                </button>
+                <button
+                  className="ml-2 px-4 py-2 bg-gray-300 rounded"
+                  onClick={handleCloseDialog}
+                >
+                  {t('VoiceCommand:cancel', 'Cancel')}
+                </button>
+              </div>
+            </div>
+          </Modal>
+        )}
       </div>
+    </div>
   );
 }
 
