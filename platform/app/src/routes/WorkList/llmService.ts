@@ -149,6 +149,51 @@ Thought: Sort by studyDate in descending order
   "sortDirection": "descending"
 }
 
+Instruction: "Show me the most recent patient study"
+Thought: "Most recent" implies the latest study by date.
+So we need to sort by studyDate in ascending order, then open the first study.
+This requires a run_sequence with sort + open_study_index(index=1).
+{
+  "command": "run_sequence",
+  "steps": [
+    { "command": "sort", "sortBy": "studyDate", "sortDirection": "ascending" },
+    { "command": "open_study_index", "index": 1 }
+  ]
+}
+
+Instruction: "Show me the oldest study"
+Thought: "Oldest" means the earliest study by date.
+We sort by studyDate in descending order, then open the first study.
+{
+  "command": "run_sequence",
+  "steps": [
+    { "command": "sort", "sortBy": "studyDate", "sortDirection": "descending" },
+    { "command": "open_study_index", "index": 1 }
+  ]
+}
+
+Instruction: "Show me the recently taken patient scan"
+Thought: "Recently taken" is interpreted the same as "most recent".
+Sort by studyDate ascending, then open index 1.
+{
+  "command": "run_sequence",
+  "steps": [
+    { "command": "sort", "sortBy": "studyDate", "sortDirection": "ascending" },
+    { "command": "open_study_index", "index": 1 }
+  ]
+}
+
+Instruction: "Open the earliest recorded study"
+Thought: "Earliest" implies a past-dated study.
+Sort by studyDate descending and open the first one.
+{
+  "command": "run_sequence",
+  "steps": [
+    { "command": "sort", "sortBy": "studyDate", "sortDirection": "descending" },
+    { "command": "open_study_index", "index": 1 }
+  ]
+}
+
 Instruction: "Go back to the main page"
 Thought: Reset filters and go to page 1
 {
@@ -557,6 +602,20 @@ function buildRAGContextFromStudies(
     return '';
   }
 
+  const exactMatch = studies.find(
+    s => s.patientName?.toLowerCase().trim() === query
+  );
+  if (exactMatch) {
+    return `
+### Context:
+Use this study only. It matches the patientName in the user instruction exactly.
+
+[
+  { "patientName": "${exactMatch.patientName}", "studyInstanceUid": "${exactMatch.studyInstanceUid}" }
+]
+`;
+  }
+
   const scored = studies.map(s => {
     const name = s.patientName?.toLowerCase() ?? '';
     return {
@@ -566,9 +625,9 @@ function buildRAGContextFromStudies(
   });
 
   const candidates = scored
-    .filter(x => x.score >= 0.5)
+    .filter(x => x.score >= 0.4)
     .sort((a, b) => b.score - a.score)
-    .slice(0, 5)
+    .slice(0, 10)
     .map(x => x.study);
 
   if (candidates.length === 0) return '';
@@ -581,8 +640,8 @@ function buildRAGContextFromStudies(
 
   return `
 ### Context:
-Here are possible matching studies.
-Pick the one whose patientName best matches the user’s instruction (spelling/pronunciation).
+No exact match found. Here are studies with similar patientNames.
+Pick the one that best matches the user’s instruction (spelling/pronunciation).
 
 [
 ${listJson}
@@ -590,41 +649,16 @@ ${listJson}
 `;
 }
 
-function buildCurrentPageContext(currentPageStudies: Study[]): string {
-  if (!currentPageStudies.length) return '';
 
-  const items = currentPageStudies.map((s, idx) => {
-    return `  { "index": ${idx + 1}, "patientName": "${s.patientName}", "studyInstanceUid": "${s.studyInstanceUid}" }`;
-  });
-
-  return `
-### current_page:
-These are the studies currently visible on screen (1-based index):
-[
-${items.join(',\n')}
-]
-
-Instructions:
-- Only return the UID of a study if the user's requested index exists in this list.
-- If the user requests an index not listed here (e.g., "10th study" but only 3 are shown), do NOT return any studyInstanceUid. Instead, respond with:
-{
-  "command": "error",
-  "message": "Invalid index: no such study on the current page"
-}
-`;
-}
 
 export async function sendPromptToLLM(
   promptText: string,
   context: 'worklist' | 'viewer' = 'worklist',
   studies: Study[] = [],
-  currentPageStudies: Study[] = []
+  variant: PromptVariant = 'fewshot_with_cot'
 ): Promise<any | null> {
-  const fewshot = FEWSHOTS[context];
-  const ragContext = buildRAGContextFromStudies(studies, promptText);
-  const currentPageContext = buildCurrentPageContext(currentPageStudies);
 
-  const fullPrompt = `${fewshot}\n${ragContext}\n${currentPageContext}\nUser: ${promptText}\nResponse:`;
+  const fullPrompt = buildPromptVariant(variant, promptText, context, studies);
 
   try {
     const response = await ai.models.generateContent({
@@ -651,4 +685,68 @@ export async function sendPromptToLLM(
     console.error("Gemini API 요청 실패:", error);
     return null;
   }
+}
+
+
+type PromptVariant = 'no_fewshot' | 'fewshot_no_cot' | 'fewshot_with_cot';
+
+function buildPromptVariant(
+  variant: PromptVariant,
+  promptText: string,
+  context: 'worklist' | 'viewer',
+  studies: Study[]
+): string {
+  const ragContext = buildRAGContextFromStudies(studies, promptText);
+
+  if (variant === 'no_fewshot') {
+    const guide = context === 'worklist' ? `
+  You are a helpful PACS assistant in a medical study list viewer. Convert user instructions into structured JSON commands. Supported commands include:
+
+  ─── WorkList commands ───
+  - filter: Apply filters like patientName, description, modalities, or studyDateRange.
+  - go_to_page: Change the page number.
+  - sort: Sort the list by a column and direction.
+  - clear_filters: Remove all current filters.
+  - open_study: Open a specific study by StudyInstanceUID.
+  - show_version: Show app version info.
+  - open_upload: Open the DICOM file upload dialog.
+  - define_macro: Save a named sequence of steps (worklist or viewer) under a macro.
+  - perform_macro: Execute a previously defined macro.
+
+  If multiple patientName/UID pairs are provided in Context, choose the one most similar to the user’s input (spelling/pronunciation).
+  - If the user instruction includes a **filter** followed by a **numbered result** (e.g., "4th", "second"), you MUST:
+    1. First apply the filter command.
+    2. Then return: { "command": "open_study_index", "index": N }
+
+  - DO NOT return open_study with studyInstanceUid in these cases. Even if RAG gives matching patients, you must ignore them.
+
+  Respond ONLY in JSON format with the fields { "command": ..., other_fields... }
+  ` : `
+  You are a helpful assistant inside a medical image viewer. Convert input into layout or interaction commands. Supported commands include:
+
+  - change_layout: Change the layout. Supported layouts include "1x1", "2x2", "2x1", "3x1".
+  - rotate_view: Rotate the image. Use direction (left/right) and angle.
+  - pan_view: Move the image in screen space. Use dx and dy.
+  - zoom_view: Zoom in/out with direction, intensity, and optional dx/dy.
+  - play_cine / stop_cine: Start/stop playback.
+  - download_image: Download the current view.
+  - reset_view: Reset pan/zoom.
+
+  Respond ONLY in JSON format with fields like { "command": ..., other_fields... }
+  `;
+
+    return `${ragContext}\n${guide}\nInstruction: "${promptText}"\nJSON:`;
+  }
+
+
+  const fewshotRaw = FEWSHOTS[context];
+
+  const fewshot =
+    variant === 'fewshot_no_cot'
+      ? fewshotRaw.replace(/^Instruction:.*?\nThought:.*?\n/mg, match =>
+        match.replace(/Thought:.*?\n/, '')
+      )
+      : fewshotRaw;
+
+  return `${fewshot}\n${ragContext}\nUser: ${promptText}\nResponse:`;
 }

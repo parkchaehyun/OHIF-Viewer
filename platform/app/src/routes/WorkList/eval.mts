@@ -17,10 +17,12 @@ if (typeof sendPromptToLLM !== 'function') {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// CLI args parsing
 const args = process.argv.slice(2);
 const includeIdx = args.indexOf('--include');
+const shotIdx = args.indexOf('--shot');
+
 const includedFunctions = includeIdx !== -1 ? args.slice(includeIdx + 1).map(Number) : null;
+const selectedShot = shotIdx !== -1 ? args[shotIdx + 1] : 'fewshot_with_cot';
 
 // 경로
 const resultDir = path.join(__dirname, 'result');
@@ -31,25 +33,11 @@ type EvalItem = { id: number; function: number; category: string; instruction: s
 type ResultItem = { id: number; function: number; category: string; instruction: string; expected: any; actual: any; pass: boolean; duration: number; };
 type Stats = { [funcNum: number]: { name: string; total: number; correct: number; durations: number[] } };
 
-// context 감지
-function detectContext(exp: any): 'viewer' | 'worklist' {
-  const v = new Set([
-    'change_layout', 'rotate_view', 'zoom_view', 'pan_view',
-    'play_cine', 'stop_cine', 'download_image', 'reset_view',
-    'define_macro', 'perform_macro'
-  ]);
-  return v.has(exp.command) ? 'viewer' : 'worklist';
-}
-
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function evaluateLLM(filePath: string) {
   const data: EvalItem[] = JSON.parse(await fs.readFile(filePath, 'utf-8'));
-
-  // 함수 번호 필터링 적용
-  const filteredData = includedFunctions
-    ? data.filter(d => includedFunctions.includes(d.function))
-    : data;
+  const filteredData = includedFunctions ? data.filter(d => includedFunctions.includes(d.function)) : data;
 
   const stats: Stats = {};
   const logs: string[] = [];
@@ -66,8 +54,10 @@ async function evaluateLLM(filePath: string) {
 
   for (let i = 0; i < filteredData.length; i++) {
     const it = filteredData[i];
+
+    // ⬇️ 선택된 few-shot 방식 전달
     const start = Date.now();
-    const actual = await sendPromptToLLM(it.instruction, detectContext(it.expected), studies);
+    const actual = await sendPromptToLLM(it.instruction, "worklist", studies, selectedShot);
     const duration = Date.now() - start;
     const pass = deepEqual(actual, it.expected);
 
@@ -92,7 +82,7 @@ async function evaluateLLM(filePath: string) {
     const resultLine = JSON.stringify(resultItem, null, 2) + (isLast ? '\n' : ',\n');
     await fs.appendFile(resultsPath, resultLine);
 
-    await sleep(6000);
+    await sleep(4100);
   }
 
   await fs.appendFile(resultsPath, ']\n');
