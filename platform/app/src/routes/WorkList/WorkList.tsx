@@ -129,10 +129,23 @@ function WorkList({
     // 3) Run worklist‐side steps, but intercept "open_study" so we only record the UID.
     let openTargetUid: string | null = null;
     for (const step of worklistSteps) {
+      /* ── open_study ─────────────────────────────────────────────── */
       if (step.command === 'open_study' && typeof step.studyInstanceUid === 'string') {
-        // Capture the UID without navigating immediately:
-        openTargetUid = step.studyInstanceUid;
+        openTargetUid = step.studyInstanceUid;       // just remember it
         await delay(0);
+        continue;
+      }
+
+      /* ── open_study_index (NEW) ────────────────────────────────── */
+      if (step.command === 'open_study_index' && typeof step.index === 'number') {
+        const idx = step.index - 1;                  // 1-based → 0-based
+        if (idx >= 0 && idx < currentPageStudies.length) {
+          openTargetUid = currentPageStudies[idx].studyInstanceUid;
+        } else {
+          console.warn(`open_study_index ${step.index} out of range`);
+        }
+        await delay(0);
+        continue;
       } else {
         await handleLLMCommand(step);
       }
@@ -156,44 +169,6 @@ function WorkList({
       pendingViewerCommands: encoded,
     });
     navigate(`/viewer/dicomweb?${query.toString()}`);
-  };
-
-
-  /**
-   * runCommandsSequence(commandsArray):
-   *  - Executes each command in the array in series (awaiting each).
-   *  - Used by `run_sequence`.
-   */
-  const runCommandsSequence = async (commandsArray: any[]): Promise<void> => {
-    if (!Array.isArray(commandsArray)) {
-      console.warn('runCommandsSequence expects an array of commands.');
-      return;
-    }
-
-    for (let cmd of commandsArray) {
-      // If this is an open_study step and has the placeholder, interpolate it:
-      if (
-        cmd.command === 'open_study' &&
-        typeof cmd.studyInstanceUid === 'string' &&
-        cmd.studyInstanceUid.match(/^\{\{studies\[0\]\.studyInstanceUid\}\}$/)
-      ) {
-        // Ensure we have at least one study on the current page:
-        if (studies.length > 0 && studies[0].studyInstanceUid) {
-          cmd = {
-            ...cmd,
-            studyInstanceUid: studies[0].studyInstanceUid,
-          };
-        } else {
-          console.warn(
-            "runCommandsSequence: tried to interpolate '{{studies[0].studyInstanceUid}}' but no studies are loaded."
-          );
-          // Let handleLLMCommand produce an error or skip
-        }
-      }
-
-      await handleLLMCommand(cmd);
-      await delay(100);
-    }
   };
 
 
