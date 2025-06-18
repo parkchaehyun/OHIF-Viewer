@@ -117,13 +117,6 @@ function ViewerLayout({
       return;
     }
 
-    // Immediately clear the URL param, then wait 2 seconds, then run the commands:
-    params.delete('pendingViewerCommands');
-    navigate(
-      { pathname: location.pathname, search: params.toString() },
-      { replace: true }
-    );
-
     const timer = setTimeout(async () => {
       if (cancelled) {
         return;
