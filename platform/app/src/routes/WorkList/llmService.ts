@@ -49,7 +49,7 @@ export async function translateToEnglish(text: string): Promise<string> {
 
 const WORKLIST_FEWSHOTS = `You are a helpful PACS assistant in a medical study list viewer. Convert user instructions into structured JSON commands. Supported commands include:
 
-─── WorkList commands ───
+WorkList commands
 - filter: Apply filters like patientName, description, modalities, or studyDateRange.
 - go_to_page: Change the page number.
 - sort: Sort the list by a column and direction.
@@ -60,14 +60,15 @@ const WORKLIST_FEWSHOTS = `You are a helpful PACS assistant in a medical study l
 - define_macro: Save a named sequence of steps (worklist or viewer) under a macro.
 - perform_macro: Execute a previously defined macro.
 
-If multiple patientName/UID pairs are provided in Context, choose the one most similar to the user’s input (spelling/pronunciation).
-- If the user instruction includes a **filter** followed by a **numbered result** (e.g., "4th", "second"), you MUST:
-   1. First apply the filter command.
-   2. Then return: { "command": "open_study_index", "index": N }
+Guidelines
+- If the instruction includes a filter(e.g. by date, modality, name) followed by a numbered study (e.g. "2nd", "first", "open number 3"), then:
+   1. First generate a filter command.
+   2. Then generate: { "command": "open_study_index", "index": N }
+- For study date filtering, always use the format: "studyDateRange": ["YYYY-MM-DD", "YYYY-MM-DD"] with identical start and end values.
+- Output must be a valid **single JSON object** (no extra text, no markdown, no explanation).
+- Respond ONLY with structured JSON in the format: { "command": ..., ... } – no text, no comments.
+- Do not split filter and open into a run_sequence; just return two top-level commands in sequence.
 
-- DO NOT return open_study with studyInstanceUid in these cases. Even if RAG gives matching patients, you must ignore them.
-
-Respond ONLY in JSON format with the fields { "command": ..., other_fields... }
 
 ### WorkList Examples
 
@@ -267,7 +268,7 @@ Thought: Reset all filtering values
 }
 
 Instruction: "Remove the filters"
-Thought: Again, user wants to clear filters
+Thought: user wants to clear filters
 {
   "command": "clear_filters"
 }
@@ -305,95 +306,74 @@ Thought: Open the upload UI
   "command": "open_upload"
 }
 
-Instruction: "Run these together: go to page 3, then filter by patient 'Kim', then sort by date descending"
-Thought: We want to execute three steps in sequence without saving a macro.
+Instruction: Run these together: go to page 3, then filter by patient Kim, then sort by date descending
+Thought:
+- Step 1: Navigate to page 3 → use go_to_page
+- Step 2: Apply patient name filter for Kim → use filter with patientName
+- Step 3: Sort by study date in descending order → use sort with studyDate and descending
+- Since steps must run in order, wrap with run_sequence
 {
   "command": "run_sequence",
   "steps": [
-    {
-      "command": "go_to_page",
-      "pageNumber": 3
-    },
-    {
-      "command": "filter",
-      "patientName": "Kim"
-    },
-    {
-      "command": "sort",
-      "sortBy": "studyDate",
-      "sortDirection": "descending"
-    }
+    { "command": "go_to_page", "pageNumber": 3 },
+    { "command": "filter", "patientName": "Kim" },
+    { "command": "sort", "sortBy": "studyDate", "sortDirection": "descending" }
   ]
 }
 
-Instruction: "Define a macro named A that opens the latest study"
-Thought: We store the two‐step sequence under macro "A".
+Instruction: Define a macro named A that opens the latest study
+Thought:
+- Step 1: Sort studies by studyDate descending → most recent first
+- Step 2: Open the top study → use open_study_index with index 1
+- Wrap as define_macro with name A
 {
   "command": "define_macro",
   "macroName": "A",
   "steps": [
-    {
-      "command": "sort",
-      "sortBy": "studyDate",
-      "sortDirection": "descending"
-    },
-    {
-      "command": "open_study",
-      "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
-    }
+    { "command": "sort", "sortBy": "studyDate", "sortDirection": "descending" },
+    { "command": "open_study_index", "index": 1 }
   ]
 }
 
-Instruction: "Perform macro A"
-Thought: We want to run the previously defined macro "A".
+Instruction: Perform macro A
+Thought:
+- Execute macro named A → use perform_macro with macroName A
 {
   "command": "perform_macro",
   "macroName": "A"
 }
 
-Instruction: "Define a macro named B that goes to page 1, clears filters, and sorts by patientName ascending"
-Thought: Store a three‐step sequence under macro "B".
+Instruction: Define a macro named B that goes to page 1, clears filters, and sorts by patientName ascending
+Thought:
+- Step 1: Navigate to page 1 → go_to_page
+- Step 2: Clear filters → clear_filters
+- Step 3: Sort by patientName ascending → sort with patientName and ascending
+- Wrap steps into define_macro with name B
 {
   "command": "define_macro",
   "macroName": "B",
   "steps": [
-    {
-      "command": "go_to_page",
-      "pageNumber": 1
-    },
-    {
-      "command": "clear_filters"
-    },
-    {
-      "command": "sort",
-      "sortBy": "patientName",
-      "sortDirection": "ascending"
-    }
+    { "command": "go_to_page", "pageNumber": 1 },
+    { "command": "clear_filters" },
+    { "command": "sort", "sortBy": "patientName", "sortDirection": "ascending" }
   ]
 }
 
-Instruction: "Run macro B"
-Thought: Execute macro "B" (page 1 → clear → sort).
-{
-  "command": "perform_macro",
-  "macroName": "B"
-}
-
-Instruction: "Go to the second page and open the first study"
-Thought: Change to page 2, then open the top study on that page.
+Instruction: Go to the second page and open the first study
+Thought:
+- Step 1: Go to page 2 → go_to_page
+- Step 2: Open top study → open_study_index with index 1
+- Run both steps in sequence using run_sequence
 {
   "command": "run_sequence",
   "steps": [
-    {
-      "command": "go_to_page",
-      "pageNumber": 2
-    },
-    {
-      "command": "open_study",
-      "studyInstanceUid": "{{studies[0].studyInstanceUid}}"
-    }
+    { "command": "go_to_page", "pageNumber": 2 },
+    { "command": "open_study_index", "index": 1 }
   ]
 }
+
+
+
 `;
 
 const VIEWER_FEWSHOTS = `You are a helpful assistant inside a medical image viewer. Convert input into layout or interaction commands. Supported commands include:
@@ -405,6 +385,14 @@ const VIEWER_FEWSHOTS = `You are a helpful assistant inside a medical image view
 - play_cine / stop_cine: Start/stop playback.
 - download_image: Download the current view.
 - reset_view: Reset pan/zoom.
+
+Guidelines:
+- Do NOT use repeated zoom commands. Use a single zoom_view with appropriate "intensity" (e.g., intensity: 3).
+- Inside a define_macro step list, do NOT use run_sequence — just use flat command arrays.
+- When referring to a study result, always use "open_study_index", not "open_study".
+- For date filtering, use "studyDateRange": ["YYYY-MM-DD", "YYYY-MM-DD"] with identical start and end.
+- Avoid fields not listed above.
+- Ensure output is a valid single JSON object — no extra text, markdown, or formatting
 
 Respond ONLY in JSON format with fields like { "command": ..., other_fields... }
 
@@ -476,7 +464,12 @@ Thought: Reset zoom and pan to default
 }
 
 Instruction: "Run these together: switch to 2×2, then zoom in twice, then download"
-Thought: We want three viewer commands in one shot without saving a macro.
+Thought:
+- The user requests three actions in sequence: layout change, zooming in twice, and downloading the image.
+- Step 1: Change the viewer layout to 2×2 using the change_layout command.
+- Step 2: Zoom in two levels using zoom_view with intensity: 2. Keep dx and dy as 0 (centered).
+- Step 3: Trigger image download using the download_image command.
+- These should be grouped in order using run_sequence.
 {
   "command": "run_sequence",
   "steps": [
@@ -487,14 +480,7 @@ Thought: We want three viewer commands in one shot without saving a macro.
     {
       "command": "zoom_view",
       "direction": "in",
-      "intensity": 1,
-      "dx": 0,
-      "dy": 0
-    },
-    {
-      "command": "zoom_view",
-      "direction": "in",
-      "intensity": 1,
+      "intensity": 2,
       "dx": 0,
       "dy": 0
     },
@@ -505,7 +491,11 @@ Thought: We want three viewer commands in one shot without saving a macro.
 }
 
 Instruction: "Define a macro named V1 that resets view and stops cine"
-Thought: Save a two‐step macro called "V1".
+Thought:
+- The user wants to store a reusable action sequence called "V1".
+- Step 1: Use reset_view to return the viewport to its default state.
+- Step 2: Use stop_cine to stop cine playback if it’s running.
+- Group these steps and save them using define_macro under the name "V1".
 {
   "command": "define_macro",
   "macroName": "V1",
@@ -520,14 +510,22 @@ Thought: Save a two‐step macro called "V1".
 }
 
 Instruction: "Perform macro V1"
-Thought: Execute the named macro "V1" (reset + stop).
+Thought:
+- The user is asking to execute the previously defined macro "V1".
+- This macro includes reset and stop operations.
+- Use the perform_macro command and specify the macro name.
 {
   "command": "perform_macro",
   "macroName": "V1"
 }
 
 Instruction: "Define macro V2 to pan up 50, pan right 50, and zoom out once"
-Thought: Store three viewer steps under macro "V2".
+Thought:
+- The user wants to define a macro named "V2" with camera movement and zoom actions.
+- Step 1: Pan upward by setting dy = 50 (positive Y-direction) using pan_view.
+- Step 2: Pan rightward by setting dx = 50 (positive X-direction).
+- Step 3: Zoom out one level using zoom_view with direction: "out" and intensity: 1.
+- Store all three actions under macro name "V2" using define_macro.
 {
   "command": "define_macro",
   "macroName": "V2",
@@ -553,11 +551,102 @@ Thought: Store three viewer steps under macro "V2".
 }
 
 Instruction: "Run macro V2"
-Thought: Execute macro V2 (pan up → pan right → zoom out).
+Thought:
+- The user wants to execute macro "V2" that performs a pan up, pan right, and zoom out sequence.
+- Use perform_macro with the macro name to run the stored command list.
 {
   "command": "perform_macro",
   "macroName": "V2"
 }
+
+Instruction: "Define macro 5 that rotates 90 degrees to the right and zooms in once"
+Thought:
+- Rotation is done using rotate_view with direction "right" and angle 90
+- Zooming in once is zoom_view with intensity 1
+- The macro name is the digit "5", not a description
+{
+  "command": "define_macro",
+  "macroName": "5",
+  "steps": [
+    {
+      "command": "rotate_view",
+      "direction": "right",
+      "angle": 90
+    },
+    {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 1,
+      "dx": 0,
+      "dy": 0
+    }
+  ]
+}
+
+Instruction: "Create macro 7 that zooms in three times"
+Thought:
+- Zooming three times should be done using zoom_view with intensity: 3
+- Avoid repeating three separate zoom_view commands
+- Macro name is simply "7"
+{
+  "command": "define_macro",
+  "macroName": "7",
+  "steps": [
+    {
+      "command": "zoom_view",
+      "direction": "in",
+      "intensity": 3,
+      "dx": 0,
+      "dy": 0
+    }
+  ]
+}
+
+Instruction: "Define macro 9 that filters for CR modality and opens the first result"
+Thought:
+- First filter by modalities = ["CR"]
+- Then open the first study using open_study_index with index 1
+- Do not use open_study, use open_study_index instead
+{
+  "command": "define_macro",
+  "macroName": "9",
+  "steps": [
+    {
+      "command": "filter",
+      "modalities": ["CR"]
+    },
+    {
+      "command": "open_study_index",
+      "index": 1
+    }
+  ]
+}
+
+Instruction: "Make macro 12 that filters to US and opens the first study, then pans diagonally"
+Thought:
+- Just sequence steps in macro, don’t wrap them in another run_sequence
+- Pan diagonally using dx: 10, dy: 10
+{
+  "command": "define_macro",
+  "macroName": "12",
+  "steps": [
+    {
+      "command": "filter",
+      "modalities": ["US"]
+    },
+    {
+      "command": "open_study_index",
+      "index": 1
+    },
+    {
+      "command": "pan_view",
+      "dx": 10,
+      "dy": 10
+    }
+  ]
+}
+
+
 `;
 
 const FEWSHOTS: Record<string, string> = {
@@ -699,45 +788,86 @@ function buildPromptVariant(
   const ragContext = buildRAGContextFromStudies(studies, promptText);
 
   if (variant === 'no_fewshot') {
-    const guide = context === 'worklist' ? `
-  You are a helpful PACS assistant in a medical study list viewer. Convert user instructions into structured JSON commands. Supported commands include:
+    const guide = `
+  You are a helpful PACS assistant in a medical image viewing system. Your task is to convert user instructions into structured JSON commands for either the study list viewer (WorkList) or image viewer (Viewer), depending on the context.
 
-  ─── WorkList commands ───
+  ───────────── WorkList Commands ─────────────
   - filter: Apply filters like patientName, description, modalities, or studyDateRange.
   - go_to_page: Change the page number.
   - sort: Sort the list by a column and direction.
   - clear_filters: Remove all current filters.
   - open_study: Open a specific study by StudyInstanceUID.
+  - open_study_index: Open the N-th study in the list (0-based index).
   - show_version: Show app version info.
   - open_upload: Open the DICOM file upload dialog.
   - define_macro: Save a named sequence of steps (worklist or viewer) under a macro.
   - perform_macro: Execute a previously defined macro.
 
-  If multiple patientName/UID pairs are provided in Context, choose the one most similar to the user’s input (spelling/pronunciation).
-  - If the user instruction includes a **filter** followed by a **numbered result** (e.g., "4th", "second"), you MUST:
-    1. First apply the filter command.
-    2. Then return: { "command": "open_study_index", "index": N }
-
-  - DO NOT return open_study with studyInstanceUid in these cases. Even if RAG gives matching patients, you must ignore them.
-
-  Respond ONLY in JSON format with the fields { "command": ..., other_fields... }
-  ` : `
-  You are a helpful assistant inside a medical image viewer. Convert input into layout or interaction commands. Supported commands include:
-
+  ───────────── Viewer Commands ─────────────
   - change_layout: Change the layout. Supported layouts include "1x1", "2x2", "2x1", "3x1".
-  - rotate_view: Rotate the image. Use direction (left/right) and angle.
-  - pan_view: Move the image in screen space. Use dx and dy.
-  - zoom_view: Zoom in/out with direction, intensity, and optional dx/dy.
-  - play_cine / stop_cine: Start/stop playback.
-  - download_image: Download the current view.
-  - reset_view: Reset pan/zoom.
+  - rotate_view: Rotate the image. Use direction ("left" or "right") and angle.
+  - pan_view: Move the image. Use dx and dy (pixels).
+  - zoom_view: Zoom in/out. Use direction ("in"/"out"), intensity (>=1), and optional dx/dy.
+  - play_cine / stop_cine: Start or stop image playback.
+  - download_image: Download the currently visible image.
+  - reset_view: Reset pan and zoom to default.
 
-  Respond ONLY in JSON format with fields like { "command": ..., other_fields... }
+  ───────────── Guidelines ─────────────
+  - Always respond with a **single valid JSON object** — no markdown, comments, or extra text.
+  - For multiple commands (e.g., "go to page then filter"), use:
+    {
+      "command": "run_sequence",
+      "steps": [ {command1}, {command2}, ... ]
+    }
+  - Do not use run_sequence inside a define_macro. Macros should use flat steps array.
+  - For zooming multiple steps, use one zoom_view with appropriate "intensity".
+  - When referring to numbered study results (e.g., "third study"), return:
+      1. A filter command (if needed)
+      2. Then { "command": "open_study_index", "index": N }
+  - Never return open_study in these cases, even if patient UID is known.
+  - For date filtering, use:
+      "studyDateRange": ["YYYY-MM-DD", "YYYY-MM-DD"] with identical values for single-day
+  - For define_macro, macro names may be strings or numbers, passed as "macroName": "3"
+
+  ───────────── Return Format Reference ─────────────
+  - change_layout:         { "command": "change_layout", "layout": "2x2" }
+  - rotate_view:           { "command": "rotate_view", "direction": "right", "angle": 90 }
+  - pan_view:              { "command": "pan_view", "dx": 50, "dy": -30 }
+  - zoom_view:             { "command": "zoom_view", "direction": "in", "intensity": 2, "dx": 0, "dy": 0 }
+  - play_cine:             { "command": "play_cine" }
+  - stop_cine:             { "command": "stop_cine" }
+  - download_image:        { "command": "download_image" }
+  - reset_view:            { "command": "reset_view" }
+  - go_to_page:            { "command": "go_to_page", "pageNumber": 2 }
+  - sort:                  { "command": "sort", "sortBy": "studyDate", "sortDirection": "descending" }
+  - filter:                { "command": "filter", "patientName": "Kim" }
+                          { "command": "filter", "modalities": ["CT"], "studyDateRange": ["2025-06-20", "2025-06-20"] }
+  - clear_filters:         { "command": "clear_filters" }
+  - open_study:            { "command": "open_study", "studyInstanceUid": "1.2.3.4.5.6" }
+  - open_study_index:      { "command": "open_study_index", "index": 3 }
+  - show_version:          { "command": "show_version" }
+  - open_upload:           { "command": "open_upload" }
+  - define_macro:          {
+                              "command": "define_macro",
+                              "macroName": "A",
+                              "steps": [
+                                { "command": "zoom_view", ... },
+                                { "command": "pan_view", ... }
+                              ]
+                          }
+  - perform_macro:         { "command": "perform_macro", "macroName": "A" }
+  - run_sequence:          {
+                              "command": "run_sequence",
+                              "steps": [
+                                { "command": "go_to_page", "pageNumber": 1 },
+                                { "command": "filter", "patientName": "Lee" }
+                              ]
+                          }
+
   `;
 
     return `${ragContext}\n${guide}\nInstruction: "${promptText}"\nJSON:`;
   }
-
 
   const fewshotRaw = FEWSHOTS[context];
 
